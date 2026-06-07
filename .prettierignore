@@ -1,0 +1,9 @@
+node_modules
+.next
+.turbo
+dist
+build
+out
+coverage
+pnpm-lock.yaml
+**/sample-output.json

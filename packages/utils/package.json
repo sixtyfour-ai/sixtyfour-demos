@@ -1,0 +1,25 @@
+{
+  "name": "@sixtyfour-demos/utils",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared helpers: workflow poller, code-snippet formatter.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sixtyfour-demos/api-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.3"
+  }
+}
