@@ -34,15 +34,35 @@ export interface CompanyIntelligenceResponse {
 }
 
 export interface AsyncJobResponse {
-  task_id: string;
+  /** The API uses either field name depending on endpoint version. */
+  task_id?: string;
+  job_id?: string;
   status?: string;
 }
 
 export interface JobStatusResponse {
-  task_id: string;
-  status: "queued" | "running" | "completed" | "failed" | string;
-  result?: CompanyIntelligenceResponse;
+  /** Temporal workflow ID (same as the task_id from the submit response). */
+  id?: string;
+  /** Temporal run ID — changes if a workflow is retried. */
+  run_id?: string;
+  /** Temporal status — confirmed lowercase from backend status_map. */
+  status?:
+    | "running"
+    | "completed"
+    | "failed"
+    | "cancelled"
+    | "terminated"
+    | "timed_out"
+    | "continued_as_new"
+    | string;
   error?: string;
+  start_time?: string;
+  close_time?: string;
+  /** Present only when status === "completed". Contains the enrichment result. */
+  result?: CompanyIntelligenceResponse;
+  /** Backend cost accounting. */
+  charge_amount?: number;
+  task_type?: string;
 }
 
 // ---------------------------------------------------------------------------

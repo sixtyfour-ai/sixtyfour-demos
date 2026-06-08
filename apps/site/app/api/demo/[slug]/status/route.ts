@@ -65,27 +65,39 @@ async function handleDirectStatus(
   taskId: string,
 ) {
   const jobStatus = await client.getJobStatus(taskId);
+  console.log("[status] raw job-status response:", JSON.stringify(jobStatus));
 
-  if (jobStatus.status === "completed") {
+  const s = (jobStatus.status ?? "").toLowerCase();
+
+  // Terminal success — documented response shape:
+  //   { status: "completed", result: { notes, structured_data, findings, references, confidence_score }, run_id, ... }
+  if (s === "completed") {
+    const result = jobStatus.result ?? jobStatus; // fallback: some old API versions embed fields at top level
+    const typed = result as import("@sixtyfour-demos/api-client").CompanyIntelligenceResponse;
     return NextResponse.json({
       status: "completed",
       progress: 100,
       message: "Done",
-      result: jobStatus.result?.structured_data ?? jobStatus.result ?? null,
+      result: typed.structured_data ?? typed,
     });
   }
 
-  if (jobStatus.status === "failed") {
+  // All Temporal terminal failure states
+  if (["failed", "error", "cancelled", "canceled", "terminated", "timed_out"].includes(s)) {
     return NextResponse.json({
       status: "failed",
-      error: jobStatus.error ?? "Enrichment failed",
+      error: jobStatus.error ?? `Job ended with status: ${jobStatus.status ?? "unknown"}`,
     });
   }
 
+  // "running", "queued", "pending", "continued_as_new" → keep polling
+  const isRunning = s === "running" || s === "processing";
   return NextResponse.json({
     status: "running",
-    progress: jobStatus.status === "running" ? 50 : 10,
-    message: jobStatus.status === "running" ? "Researching company…" : "Queued…",
+    raw_status: jobStatus.status,
+    progress: isRunning ? 50 : 10,
+    message: isRunning ? "Researching company…" : "Queued — waiting for agent…",
+    run_id: jobStatus.run_id ?? null,
   });
 }
 

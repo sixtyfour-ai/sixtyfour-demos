@@ -103,8 +103,9 @@ export const DEMOS: Demo[] = [
       {
         name: "domain",
         label: "Company domain",
-        placeholder: "ramp.com",
+        placeholder: "stripe.com",
         type: "text",
+        defaultValue: "stripe.com",
         description: "Website domain — no protocol or path.",
       },
       {
