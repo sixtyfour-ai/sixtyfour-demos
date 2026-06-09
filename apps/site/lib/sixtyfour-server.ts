@@ -1,5 +1,4 @@
 import { SixtyfourClient } from "@sixtyfour-demos/api-client";
-import { getDemoBySlug } from "./demos";
 
 /**
  * Server-only Sixtyfour helpers.
@@ -24,27 +23,8 @@ export function getSixtyfourClient(): SixtyfourClient {
   });
 }
 
-export function getWorkflowIdForDemo(slug: string): string {
-  const demo = getDemoBySlug(slug);
-  if (!demo) {
-    throw new ServerConfigError(`Unknown demo slug: ${slug}`);
-  }
-  if (!demo.envVar) {
-    throw new ServerConfigError(`Demo ${slug} does not use a workflow`);
-  }
-  const workflowId = process.env[demo.envVar];
-  if (!workflowId || workflowId.length === 0) {
-    throw new ServerConfigError(
-      `${demo.envVar} is not set. Run \`pnpm provision\` to create the workflow, then paste the printed env var into your local .env or Vercel project settings.`,
-    );
-  }
-  return workflowId;
-}
-
 /**
  * Build the people-intelligence `struct` for passive candidate enrichment.
- * Returns fixed recruiting-focused fields regardless of any user input
- * (struct is always the same for this demo — users vary by lead_info only).
  */
 export function buildTalentStruct(): Record<string, string> {
   return {
@@ -68,8 +48,6 @@ export function buildTalentStruct(): Record<string, string> {
 
 /**
  * Build the company-intelligence `struct` for ICP scoring.
- * The icp_description is embedded in the research_plan context —
- * the struct defines what fields to return.
  */
 export function buildIcpStruct(_icpDescription: string): Record<string, string> {
   return {

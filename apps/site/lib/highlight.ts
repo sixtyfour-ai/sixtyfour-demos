@@ -29,3 +29,13 @@ export async function highlightSnippets(snippets: {
   ]);
   return { javascript, python, curl };
 }
+
+/** Highlight an arbitrary JSON value server-side. */
+export async function highlightJson(value: unknown): Promise<string> {
+  return codeToHtml(JSON.stringify(value, null, 2), { lang: "json", theme: THEME });
+}
+
+/** Highlight a bash/shell command string server-side. */
+export async function highlightBash(code: string): Promise<string> {
+  return codeToHtml(code, { lang: "bash", theme: THEME });
+}

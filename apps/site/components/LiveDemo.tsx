@@ -10,11 +10,11 @@ import { formatPercent } from "../lib/utils";
 interface LiveDemoProps {
   demo: SerializableDemo;
   initialResult: unknown;
+  /** Pre-highlighted HTML for the initial sample (server-rendered). */
+  initialHighlightedResult?: string;
 }
 
 interface RunState {
-  jobId: string | null;
-  runId: string | null;
   status: "idle" | "starting" | "running" | "completed" | "failed";
   progress: number;
   message: string;
@@ -25,16 +25,12 @@ interface RunState {
   requestBody: Record<string, string> | null;
 }
 
-const POLL_INTERVAL_MS = 5_000;   // 5s — matches platform test cadence
-const MAX_POLL_DURATION_MS = 35 * 60 * 1000;
 
-export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
+export function LiveDemo({ demo, initialResult, initialHighlightedResult }: LiveDemoProps) {
   const [form, setForm] = React.useState<Record<string, string>>(() =>
     Object.fromEntries(demo.inputs.map((i) => [i.name, i.defaultValue ?? ""])),
   );
   const [run, setRun] = React.useState<RunState>({
-    jobId: null,
-    runId: null,
     status: "idle",
     progress: 0,
     message: "",
@@ -47,6 +43,33 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
   const [elapsed, setElapsed] = React.useState(0);
   const [debugOpen, setDebugOpen] = React.useState(false);
   const cancelledRef = React.useRef(false);
+
+  // Highlighted JSON for the result panel — starts with the server-pre-highlighted sample,
+  // then updates client-side via Shiki whenever a live result lands.
+  const [highlightedResult, setHighlightedResult] = React.useState<string | undefined>(
+    initialHighlightedResult,
+  );
+
+  React.useEffect(() => {
+    if (run.result === null || run.result === undefined) {
+      setHighlightedResult(initialHighlightedResult);
+      return;
+    }
+    // Skip re-highlighting the initial sample (already pre-highlighted server-side)
+    if (run.result === initialResult) {
+      setHighlightedResult(initialHighlightedResult);
+      return;
+    }
+    // Highlight live result client-side
+    import("shiki").then(({ codeToHtml }) =>
+      codeToHtml(JSON.stringify(run.result, null, 2), {
+        lang: "json",
+        theme: "github-dark",
+      }),
+    ).then(setHighlightedResult).catch(() => {
+      setHighlightedResult(undefined);
+    });
+  }, [run.result, initialResult, initialHighlightedResult]);
 
   const onCancel = () => {
     cancelledRef.current = true;
@@ -93,8 +116,6 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRun({
-      jobId: null,
-      runId: null,
       status: "starting",
       progress: 0,
       message: "Submitting…",
@@ -107,26 +128,7 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
     setElapsed(0);
     cancelledRef.current = false;
     try {
-      if (demo.mode === "direct") {
-        await runDirect(demo.slug, form, setRun, cancelledRef);
-      } else {
-        // Workflow mode: submit, get job_id, then poll
-        const res = await fetch(`/api/demo/${demo.slug}/run`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-        const json = await res.json() as Record<string, unknown>;
-        if (!res.ok) {
-          const issues = json.issues as Array<{ path: string; message: string }> | undefined;
-          const detail = issues?.map((i) => `${i.path}: ${i.message}`).join("; ");
-          throw new Error(detail ?? (json.error as string) ?? `Run failed (${res.status})`);
-        }
-        const jobId = (json.job_id ?? json.task_id) as string;
-        const mode = (json.mode as string) ?? "workflow";
-        setRun((r) => ({ ...r, jobId, status: "running", message: "Agent initializing…", log: [`Job submitted · ${jobId}`] }));
-        await pollUntilComplete(demo.slug, jobId, mode, setRun, cancelledRef);
-      }
+      await runDirect(demo.slug, form, setRun, cancelledRef);
     } catch (err) {
       setRun((r) => ({
         ...r,
@@ -205,9 +207,6 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
                 Clear
               </button>
             )}
-            <p className="text-[11px] text-zinc-600">
-              Real Sixtyfour run · uses your API key configured on the site
-            </p>
           </form>
         </CardContent>
       </Card>
@@ -250,7 +249,7 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
           )}
 
           {isRunning && run.log.length > 0 && (
-            <ActivityLog entries={run.log} runId={run.runId} />
+            <ActivityLog entries={run.log} />
           )}
 
           {run.status === "failed" && (
@@ -260,7 +259,7 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
             </div>
           )}
 
-          <ResultPanel result={run.result} />
+          <ResultPanel result={run.result} highlightedHtml={highlightedResult} />
         </CardContent>
       </Card>
     </div>
@@ -278,20 +277,11 @@ export function LiveDemo({ demo, initialResult }: LiveDemoProps) {
         </button>
         {debugOpen && (
           <div className="mt-3 space-y-3">
-            <DebugBlock label="Request" badge="POST /company-intelligence-async">
+            <DebugBlock label="Request" badge="POST /company-intelligence or /people-intelligence">
               {JSON.stringify(run.requestBody, null, 2)}
             </DebugBlock>
-            {(run.jobId ?? run.runId) && (
-              <DebugBlock label="Job IDs">
-                {[
-                  run.jobId  ? `task_id  ${run.jobId}` : null,
-                  run.runId  ? `run_id   ${run.runId}` : null,
-                  run.startedAt ? `started  ${new Date(run.startedAt).toISOString()}` : null,
-                ].filter(Boolean).join("\n")}
-              </DebugBlock>
-            )}
             {run.log.length > 0 && (
-              <DebugBlock label={`Poll log (${run.log.length} requests)`}>
+              <DebugBlock label={`Activity log (${run.log.length} events)`}>
                 {run.log.join("\n")}
               </DebugBlock>
             )}
@@ -334,12 +324,21 @@ function ProgressBar({ percent, label, elapsed }: { percent: number; label: stri
   );
 }
 
-function ResultPanel({ result }: { result: unknown }) {
+function ResultPanel({ result, highlightedHtml }: { result: unknown; highlightedHtml?: string }) {
   if (result === null || result === undefined) {
     return <SkeletonResult />;
   }
+  if (highlightedHtml) {
+    return (
+      <div
+        className="shiki-wrapper max-h-[420px] overflow-auto rounded-lg border border-zinc-800 text-xs leading-relaxed [&>pre]:m-0 [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:font-mono [&>pre]:whitespace-pre-wrap [&>pre]:break-words"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+      />
+    );
+  }
   return (
-    <pre className="max-h-[420px] overflow-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-200">
+    <pre className="max-h-[420px] overflow-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-200 whitespace-pre-wrap break-words">
       <code className="font-mono">{JSON.stringify(result, null, 2)}</code>
     </pre>
   );
@@ -359,7 +358,7 @@ function SkeletonResult() {
   );
 }
 
-function ActivityLog({ entries, runId }: { entries: string[]; runId: string | null }) {
+function ActivityLog({ entries }: { entries: string[] }) {
   const ref = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     if (ref.current) ref.current.scrollTop = ref.current.scrollHeight;
@@ -370,9 +369,6 @@ function ActivityLog({ entries, runId }: { entries: string[]; runId: string | nu
       ref={ref}
       className="max-h-48 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-950 p-3 font-mono text-xs"
     >
-      {runId && (
-        <p className="mb-2 text-zinc-600">run_id · {runId}</p>
-      )}
       {entries.map((line, i) => (
         <div key={i} className="flex gap-2 leading-relaxed">
           <span className="shrink-0 text-zinc-700">{String(i + 1).padStart(2, "0")}</span>
@@ -466,103 +462,6 @@ async function runDirect(
       }
     }
   }
-}
-
-async function pollUntilComplete(
-  slug: string,
-  jobId: string,
-  mode: string,
-  setRun: React.Dispatch<React.SetStateAction<RunState>>,
-  cancelledRef: React.RefObject<boolean>,
-) {
-  const start = Date.now();
-  let transientFailures = 0;
-  const MAX_TRANSIENT_FAILURES = 3;
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    if (cancelledRef.current) return;
-    if (Date.now() - start > MAX_POLL_DURATION_MS) {
-      throw new Error("Timed out after 35 minutes. The job may still be running — check back later or try again.");
-    }
-    await sleep(POLL_INTERVAL_MS);
-    if (cancelledRef.current) return;
-
-    const elapsed = Math.floor((Date.now() - start) / 1000);
-    const ts = elapsed >= 60
-      ? `+${Math.floor(elapsed / 60)}m${(elapsed % 60).toString().padStart(2, "0")}s`
-      : `+${elapsed}s`;
-
-    let res: Response;
-    let json: Record<string, unknown>;
-    try {
-      res = await fetch(
-        `/api/demo/${slug}/status?job_id=${encodeURIComponent(jobId)}&mode=${mode}`,
-      );
-      json = await res.json();
-    } catch (fetchErr) {
-      // Network error — transient, retry
-      transientFailures++;
-      const errMsg = fetchErr instanceof Error ? fetchErr.message : "network error";
-      setRun((r) => ({ ...r, log: [...r.log, `[${ts}]  ⚠ fetch error (${transientFailures}/${MAX_TRANSIENT_FAILURES}): ${errMsg}`] }));
-      if (transientFailures >= MAX_TRANSIENT_FAILURES) {
-        throw new Error(`Network error after ${MAX_TRANSIENT_FAILURES} attempts: ${errMsg}`);
-      }
-      continue;
-    }
-
-    if (!res.ok) {
-      // 5xx are transient; 4xx (except 404) are fatal
-      if (res.status >= 500 || res.status === 404) {
-        transientFailures++;
-        const errMsg = (json as { error?: string }).error ?? `HTTP ${res.status}`;
-        setRun((r) => ({ ...r, log: [...r.log, `[${ts}]  ⚠ status check error (${transientFailures}/${MAX_TRANSIENT_FAILURES}): ${errMsg}`] }));
-        if (transientFailures >= MAX_TRANSIENT_FAILURES) {
-          throw new Error(`Status check failed after ${MAX_TRANSIENT_FAILURES} attempts: ${errMsg}`);
-        }
-        continue;
-      }
-      throw new Error((json as { error?: string }).error ?? `Status check failed (${res.status})`);
-    }
-
-    transientFailures = 0; // reset on success
-
-    // Log the real API response fields — no fake messages
-    const fields: string[] = [`status=${(json.raw_status ?? json.status) as string}`];
-    if (json.run_id) fields.push(`run_id=${json.run_id as string}`);
-    const logLine = `[${ts}]  GET /job-status/${jobId.slice(0, 18)}…  →  ${fields.join("  ")}`;
-
-    setRun((r) => ({
-      ...r,
-      progress: (json.progress as number) ?? r.progress,
-      message: (json.message as string) ?? r.message,
-      runId: (json.run_id as string) ?? r.runId,
-      log: [...r.log, logLine],
-    }));
-
-    if (json.status === "completed") {
-      const elapsed2 = Math.floor((Date.now() - start) / 1000);
-      const ts2 = elapsed2 >= 60
-        ? `+${Math.floor(elapsed2 / 60)}m${(elapsed2 % 60).toString().padStart(2, "0")}s`
-        : `+${elapsed2}s`;
-      setRun((r) => ({
-        ...r,
-        status: "completed",
-        progress: 100,
-        message: "Done",
-        result: json.result,
-        log: [...r.log, `[${ts2}]  ✓ status=completed`],
-      }));
-      return;
-    }
-    if (json.status === "failed" || json.status === "cancelled") {
-      throw new Error((json.error as string) ?? `Run ${json.status as string}`);
-    }
-  }
-}
-
-function sleep(ms: number) {
-  return new Promise<void>((r) => setTimeout(r, ms));
 }
 
 function DebugBlock({

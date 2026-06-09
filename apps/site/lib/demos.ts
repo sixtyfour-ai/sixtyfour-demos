@@ -57,12 +57,9 @@ export interface Demo {
   category: CategoryId;
   /** When false, the card links to /coming-soon and the demo page 404s. */
   status: "live" | "coming-soon";
-  /** "direct" = single API call (company-intelligence), "workflow" = workflow run+poll. */
-  mode: "direct" | "workflow";
+  mode: "direct";
   /** Human-readable tag chips on the card. */
   tags: string[];
-  /** Env var name that holds the workflow_id for this demo (workflow mode only). */
-  envVar?: string;
   /** Form input fields — used to render the live demo's input UI. */
   inputs: DemoInput[];
   /** Zod schema for the form payload — enforced server-side in /api/demo/[slug]/run. */
@@ -98,14 +95,14 @@ export const DEMOS: Demo[] = [
     category: "sales-gtm",
     status: "live",
     mode: "direct",
-    tags: ["company-intelligence", "scoring", "sync"],
+    tags: ["company-intelligence", "scoring", "sync" ,"api"],
     inputs: [
       {
         name: "domain",
         label: "Company domain",
-        placeholder: "stripe.com",
+        placeholder: "sixtyfour.com",
         type: "text",
-        defaultValue: "stripe.com",
+        defaultValue: "sixtyfour.com",
         description: "Website domain — no protocol or path.",
       },
       {
@@ -134,7 +131,7 @@ export const DEMOS: Demo[] = [
     category: "talent",
     status: "live",
     mode: "direct",
-    tags: ["people-intelligence", "recruiting", "sync"],
+    tags: ["people-intelligence", "recruiting", "sync", "api"],
     inputs: [
       {
         name: "full_name",
@@ -181,9 +178,8 @@ export const DEMOS: Demo[] = [
       "Generate a due-diligence packet on any company: ownership, sanctions exposure, shell-company signals.",
     category: "compliance",
     status: "coming-soon",
-    mode: "workflow",
+    mode: "direct",
     tags: ["enrich_company", "transform", "risk"],
-    envVar: "KYB_REPORT_WORKFLOW_ID",
     inputs: [],
     inputSchema: z.object({}),
   },
@@ -194,9 +190,8 @@ export const DEMOS: Demo[] = [
       "Map a person's online footprint across platforms, forums, and leaked credential databases.",
     category: "security",
     status: "coming-soon",
-    mode: "workflow",
+    mode: "direct",
     tags: ["search", "enrich_person", "OSINT"],
-    envVar: "THREAT_ACTOR_FOOTPRINT_WORKFLOW_ID",
     inputs: [],
     inputSchema: z.object({}),
   },
@@ -207,9 +202,8 @@ export const DEMOS: Demo[] = [
       "Investigate a founder: prior companies, investor relationships, red flags — sourced and structured.",
     category: "entity-intel",
     status: "coming-soon",
-    mode: "workflow",
+    mode: "direct",
     tags: ["enrich_person", "enrich_company", "due-diligence"],
-    envVar: "FOUNDER_BACKGROUND_CHECK_WORKFLOW_ID",
     inputs: [],
     inputSchema: z.object({}),
   },
@@ -220,9 +214,8 @@ export const DEMOS: Demo[] = [
       "Track headcount trend, leadership changes, and key hires at any competitor — refreshable on demand.",
     category: "entity-intel",
     status: "coming-soon",
-    mode: "workflow",
+    mode: "direct",
     tags: ["enrich_company", "transform"],
-    envVar: "COMPETITIVE_ORG_INTEL_WORKFLOW_ID",
     inputs: [],
     inputSchema: z.object({}),
   },

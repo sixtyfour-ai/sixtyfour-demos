@@ -5,10 +5,11 @@ import { buildCopyForLlmPrompt } from "@sixtyfour-demos/utils";
 import { CATEGORIES, DEMOS, getDemoBySlug, getRelatedDemos } from "../../../lib/demos";
 import { getSampleOutput } from "../../../lib/sample-outputs";
 import { getSnippetsForSlug } from "../../../lib/snippets";
-import { highlightSnippets } from "../../../lib/highlight";
+import { highlightSnippets, highlightJson, highlightBash } from "../../../lib/highlight";
 import { LiveDemo } from "../../../components/LiveDemo";
 import { CodeTabs } from "../../../components/CodeTabs";
 import { CopyForLLMButton } from "../../../components/CopyForLLMButton";
+import { CopyableCodeBlock } from "../../../components/CopyableCodeBlock";
 import { DemoCard } from "../../../components/DemoCard";
 
 export function generateStaticParams() {
@@ -45,6 +46,17 @@ export default async function DemoPage({ params }: { params: { slug: string } })
     : "";
 
   const highlighted = snippets ? await highlightSnippets(snippets) : undefined;
+  const initialHighlightedResult = sample ? await highlightJson(sample) : undefined;
+
+  // Pre-highlight "Run locally" step commands
+  const cloneCmd = `git clone https://github.com/sixtyfour-ai/sixtyfour-demos.git\ncd sixtyfour-demos/${demo.standalonePath ?? ""}`;
+  const envCmd = `cp .env.example .env\n# Open .env and set SIXTYFOUR_API_KEY=your_key_here`;
+  const [hlClone, hlEnv, hlInstall, hlStart] = await Promise.all([
+    highlightBash(cloneCmd),
+    highlightBash(envCmd),
+    highlightBash("pnpm install"),
+    highlightBash("pnpm start"),
+  ]);
 
   return (
     <article className="mx-auto max-w-6xl px-6 py-12">
@@ -88,7 +100,7 @@ export default async function DemoPage({ params }: { params: { slug: string } })
         <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">
           Try it
         </h2>
-        <LiveDemo demo={demoData} initialResult={sample} />
+        <LiveDemo demo={demoData} initialResult={sample} initialHighlightedResult={initialHighlightedResult} />
       </section>
 
       {/* Code snippets */}
@@ -105,7 +117,7 @@ export default async function DemoPage({ params }: { params: { slug: string } })
       {demo.outputBrief && (
         <section className="border-t border-zinc-900/60 py-10">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            What you get back
+            Response data
           </h2>
           <p className="max-w-3xl text-zinc-300">{demo.outputBrief}</p>
         </section>
@@ -113,33 +125,41 @@ export default async function DemoPage({ params }: { params: { slug: string } })
 
       {/* Run locally */}
       <section className="border-t border-zinc-900/60 py-10">
-        <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">
+        <h2 className="mb-6 text-xs font-semibold uppercase tracking-widest text-zinc-500">
           Run locally
         </h2>
-        <p className="max-w-3xl text-zinc-300">
-          Clone the repo, set your API key, provision the workflow, and run the standalone script:
-        </p>
-        <pre className="mt-4 overflow-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-200">
-          <code className="font-mono">{demo.mode === "direct"
-            ? `git clone https://github.com/sixtyfour-ai/sixtyfour-demos.git
-cd sixtyfour-demos/${demo.standalonePath ?? ""}
-cp .env.example .env
-# paste your SIXTYFOUR_API_KEY into .env
-
-pnpm install
-pnpm start`
-            : `git clone https://github.com/sixtyfour-ai/sixtyfour-demos.git
-cd sixtyfour-demos/${demo.standalonePath ?? ""}
-cp .env.example .env
-# paste your SIXTYFOUR_API_KEY into .env
-
-# Provision the workflow once:
-pnpm install
-pnpm provision
-
-# Run the demo:
-pnpm start`}</code>
-        </pre>
+        <ol className="max-w-3xl space-y-6 text-sm text-zinc-300">
+          <li className="flex gap-4">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-[10px] text-zinc-500">1</span>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-zinc-200">Clone the repo</p>
+              <CopyableCodeBlock html={hlClone} raw={cloneCmd} />
+            </div>
+          </li>
+          <li className="flex gap-4">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-[10px] text-zinc-500">2</span>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-zinc-200">Add your API key</p>
+              <p className="mt-1 text-zinc-400">Get your key from <a href="https://app.sixtyfour.ai" target="_blank" rel="noreferrer" className="text-blue-400 hover:underline">app.sixtyfour.ai</a>, then:</p>
+              <CopyableCodeBlock html={hlEnv} raw={envCmd} />
+            </div>
+          </li>
+          <li className="flex gap-4">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-[10px] text-zinc-500">3</span>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-zinc-200">Install dependencies</p>
+              <CopyableCodeBlock html={hlInstall} raw="pnpm install" />
+            </div>
+          </li>
+          <li className="flex gap-4">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-[10px] text-zinc-500">4</span>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-zinc-200">Run the demo</p>
+              <p className="mt-1 text-zinc-400">Executes the enrichment and prints the structured output to your terminal.</p>
+              <CopyableCodeBlock html={hlStart} raw="pnpm start" />
+            </div>
+          </li>
+        </ol>
       </section>
 
       {/* Related */}
