@@ -1,16 +1,17 @@
 {
-  "name": "@sixtyfour-demos/scripts",
+  "name": "@sixtyfour-demos/passive-candidate-finder",
   "version": "0.1.0",
   "private": true,
+  "description": "Enrich any person into a recruiter-ready profile with one Sixtyfour API call.",
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext .ts",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf .turbo *.tsbuildinfo"
+    "clean": "rm -rf .turbo *.tsbuildinfo",
+    "start": "tsx main.ts"
   },
   "dependencies": {
-    "@sixtyfour-demos/api-client": "workspace:*",
-    "@sixtyfour-demos/utils": "workspace:*"
+    "@sixtyfour-demos/api-client": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

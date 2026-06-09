@@ -1,0 +1,21 @@
+{
+  "current_title": "Staff Software Engineer",
+  "current_company": "Vercel",
+  "seniority_level": "Staff IC",
+  "years_experience": 11,
+  "key_skills": "TypeScript, React, Next.js, distributed systems, API design, performance optimization, technical mentorship",
+  "tech_stack": "TypeScript, Rust, Go, PostgreSQL, Redis, Kafka, Kubernetes, AWS",
+  "career_summary": "Staff engineer with 11 years of experience, currently leading the edge runtime team at Vercel. Previously built payments infrastructure at Stripe and contributed core routing logic to the Remix framework. Known for turning complex systems problems into clean APIs that other engineers love to use.",
+  "notable_achievements": [
+    "Led migration of Vercel's edge runtime from V8 isolates to a custom Rust-based sandbox — reduced cold-start latency by 40%",
+    "At Stripe, owned the idempotency layer for payment processing; now handles >$1B/day",
+    "Authored the RFC that became Next.js App Router's streaming model",
+    "Open source: 3.2k GitHub stars on a TypeScript type-inference utility library"
+  ],
+  "education": "BS Computer Science, University of Washington (2013)",
+  "linkedin_url": "https://linkedin.com/in/example-staff-engineer",
+  "email": "s.chen@vercel.com",
+  "open_to_work_signals": "Posted a thread on X in April 2026 about exploring new opportunities; LinkedIn profile updated 'Open to DMs' in bio. No 'Open to Work' badge but engagement pattern suggests active exploration.",
+  "recruiter_note": "Rare combination of deep systems experience and modern frontend expertise — would be exceptional for any role building developer infrastructure or platform products.",
+  "last_company_tenure": "2 years 8 months"
+}
