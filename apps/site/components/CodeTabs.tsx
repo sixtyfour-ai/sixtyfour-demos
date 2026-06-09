@@ -9,9 +9,16 @@ export interface CodeTabsProps {
     python: string;
     curl: string;
   };
+  /** Pre-highlighted HTML from Shiki (server-rendered). If provided, rendered
+   *  with dangerouslySetInnerHTML instead of plain text. */
+  highlighted?: {
+    javascript: string;
+    python: string;
+    curl: string;
+  };
 }
 
-export function CodeTabs({ snippets }: CodeTabsProps) {
+export function CodeTabs({ snippets, highlighted }: CodeTabsProps) {
   const [active, setActive] = React.useState<keyof typeof snippets>("javascript");
   const [copied, setCopied] = React.useState(false);
 
@@ -38,19 +45,29 @@ export function CodeTabs({ snippets }: CodeTabsProps) {
         </Button>
       </div>
       <TabsContent value="javascript">
-        <CodeBlock code={snippets.javascript} />
+        <CodeBlock code={snippets.javascript} html={highlighted?.javascript} />
       </TabsContent>
       <TabsContent value="python">
-        <CodeBlock code={snippets.python} />
+        <CodeBlock code={snippets.python} html={highlighted?.python} />
       </TabsContent>
       <TabsContent value="curl">
-        <CodeBlock code={snippets.curl} />
+        <CodeBlock code={snippets.curl} html={highlighted?.curl} />
       </TabsContent>
     </Tabs>
   );
 }
 
-function CodeBlock({ code }: { code: string }) {
+function CodeBlock({ code, html }: { code: string; html?: string }) {
+  if (html) {
+    return (
+      <div
+        className="shiki-wrapper max-h-[480px] overflow-auto rounded-lg border border-zinc-800 text-xs leading-relaxed [&>pre]:m-0 [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:font-mono"
+        // Shiki inlines background + token colors via style attributes — safe, no user content
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  }
   return (
     <pre className="max-h-[480px] overflow-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed text-zinc-200">
       <code className="font-mono">{code}</code>

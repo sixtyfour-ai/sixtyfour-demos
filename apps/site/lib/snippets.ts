@@ -8,6 +8,7 @@
  */
 
 import * as icpSnippets from "../../../demos/sales-gtm/icp-qualifier/snippets";
+import * as talentSnippets from "../../../demos/talent/passive-candidate-finder/snippets";
 
 export interface DemoSnippets {
   javascript: string;
@@ -20,6 +21,11 @@ export const SNIPPETS: Record<string, DemoSnippets> = {
     javascript: icpSnippets.JAVASCRIPT,
     python: icpSnippets.PYTHON,
     curl: icpSnippets.CURL,
+  },
+  "passive-candidate-finder": {
+    javascript: talentSnippets.JAVASCRIPT,
+    python: talentSnippets.PYTHON,
+    curl: talentSnippets.CURL,
   },
 };
 

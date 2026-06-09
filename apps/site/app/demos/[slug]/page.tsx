@@ -5,6 +5,7 @@ import { buildCopyForLlmPrompt } from "@sixtyfour-demos/utils";
 import { CATEGORIES, DEMOS, getDemoBySlug, getRelatedDemos } from "../../../lib/demos";
 import { getSampleOutput } from "../../../lib/sample-outputs";
 import { getSnippetsForSlug } from "../../../lib/snippets";
+import { highlightSnippets } from "../../../lib/highlight";
 import { LiveDemo } from "../../../components/LiveDemo";
 import { CodeTabs } from "../../../components/CodeTabs";
 import { CopyForLLMButton } from "../../../components/CopyForLLMButton";
@@ -23,7 +24,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   };
 }
 
-export default function DemoPage({ params }: { params: { slug: string } }) {
+export default async function DemoPage({ params }: { params: { slug: string } }) {
   const demo = getDemoBySlug(params.slug);
   if (!demo || demo.status !== "live") {
     notFound();
@@ -42,6 +43,8 @@ export default function DemoPage({ params }: { params: { slug: string } }) {
         jsSnippet: snippets.javascript,
       })
     : "";
+
+  const highlighted = snippets ? await highlightSnippets(snippets) : undefined;
 
   return (
     <article className="mx-auto max-w-6xl px-6 py-12">
@@ -92,9 +95,9 @@ export default function DemoPage({ params }: { params: { slug: string } }) {
       {snippets && (
         <section className="border-t border-zinc-900/60 py-10">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            Call it from your code
+            Copy code
           </h2>
-          <CodeTabs snippets={snippets} />
+          <CodeTabs snippets={snippets} highlighted={highlighted} />
         </section>
       )}
 

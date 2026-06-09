@@ -6,6 +6,7 @@ import {
   getSixtyfourClient,
   getWorkflowIdForDemo,
   buildIcpStruct,
+  buildTalentStruct,
 } from "../../../../../lib/sixtyfour-server";
 
 export const runtime = "nodejs";
@@ -64,26 +65,19 @@ export async function POST(
     throw err;
   }
 
-  // ── Direct mode: SSE stream wrapping the sync /company-intelligence call ──
+  // ── Direct mode: SSE stream wrapping a sync enrichment call ──
   if (demo.mode === "direct") {
-    const input = parsed.data as { domain: string; icp_description: string };
-    const requestBody = {
-      target_company: { website: input.domain },
-      struct: buildIcpStruct(input.icp_description),
-      tier: "low" as const,
-    };
-
     const encoder = new TextEncoder();
     const sseEvent = (event: string, data: unknown) =>
       encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
 
+    // Dispatch to the right API call based on demo slug
+    const slug = params.slug;
+
     const stream = new ReadableStream({
       async start(controller) {
-        // Heartbeat keeps the connection alive and gives the browser a visible
-        // "still running" signal. We send one immediately so the client can
-        // transition from "starting" to "running" right away.
         controller.enqueue(
-          sseEvent("status", { status: "running", message: "Agent started — researching company…", progress: 10 }),
+          sseEvent("status", { status: "running", message: "Agent started — researching…", progress: 10 }),
         );
 
         let heartbeatTimer: ReturnType<typeof setInterval> | null = setInterval(() => {
@@ -104,16 +98,56 @@ export async function POST(
         };
 
         try {
-          console.log("[run/sse] calling /company-intelligence for", input.domain);
-          const result = await client.companyIntelligence(requestBody);
-          console.log("[run/sse] enrichment complete for", input.domain);
+          let result: Record<string, unknown>;
+
+          if (slug === "passive-candidate-finder") {
+            // ── People Intelligence ──
+            const input = parsed.data as {
+              full_name: string;
+              company: string;
+              linkedin_url?: string;
+            };
+            controller.enqueue(
+              sseEvent("status", {
+                status: "running",
+                message: `Researching ${input.full_name} at ${input.company}…`,
+                progress: 15,
+              }),
+            );
+            console.log("[run/sse] calling /people-intelligence for", input.full_name, "@", input.company);
+            const piResult = await client.peopleIntelligence({
+              lead_info: {
+                full_name: input.full_name,
+                company: input.company,
+                ...(input.linkedin_url ? { linkedin_url: input.linkedin_url } : {}),
+              },
+              struct: buildTalentStruct(),
+              tier: "low",
+            });
+            console.log("[run/sse] enrichment complete for", input.full_name);
+            result = (piResult.structured_data ?? piResult) as Record<string, unknown>;
+          } else {
+            // ── Company Intelligence (ICP Qualifier and any future company demos) ──
+            const input = parsed.data as { domain: string; icp_description: string };
+            controller.enqueue(
+              sseEvent("status", {
+                status: "running",
+                message: `Researching ${input.domain}…`,
+                progress: 15,
+              }),
+            );
+            console.log("[run/sse] calling /company-intelligence for", input.domain);
+            const ciResult = await client.companyIntelligence({
+              target_company: { website: input.domain },
+              struct: buildIcpStruct(input.icp_description),
+              tier: "low" as const,
+            });
+            console.log("[run/sse] enrichment complete for", input.domain);
+            result = (ciResult.structured_data ?? ciResult) as Record<string, unknown>;
+          }
+
           clearHb();
-          controller.enqueue(
-            sseEvent("result", {
-              status: "completed",
-              result: result.structured_data ?? result,
-            }),
-          );
+          controller.enqueue(sseEvent("result", { status: "completed", result }));
         } catch (err) {
           clearHb();
           let message = "Enrichment failed";

@@ -11,9 +11,11 @@
  */
 
 import icpSample from "../../../demos/sales-gtm/icp-qualifier/sample-output.json";
+import talentSample from "../../../demos/talent/passive-candidate-finder/sample-output.json";
 
 export const SAMPLE_OUTPUTS: Record<string, unknown> = {
   "icp-qualifier": icpSample,
+  "passive-candidate-finder": talentSample,
 };
 
 export function getSampleOutput(slug: string): unknown {

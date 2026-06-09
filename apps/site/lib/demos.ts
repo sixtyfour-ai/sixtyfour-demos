@@ -98,7 +98,7 @@ export const DEMOS: Demo[] = [
     category: "sales-gtm",
     status: "live",
     mode: "direct",
-    tags: ["company-intelligence", "scoring"],
+    tags: ["company-intelligence", "scoring", "sync"],
     inputs: [
       {
         name: "domain",
@@ -130,14 +130,49 @@ export const DEMOS: Demo[] = [
     slug: "passive-candidate-finder",
     title: "Passive Candidate Finder",
     oneLiner:
-      "Turn a job description into a list of qualified, currently-employed candidates with structured profiles.",
+      "Enrich any person into a recruiter-ready profile: seniority, skills, career narrative, and open-to-work signals.",
     category: "talent",
-    status: "coming-soon",
-    mode: "workflow",
-    tags: ["search", "enrich_person"],
-    envVar: "PASSIVE_CANDIDATE_FINDER_WORKFLOW_ID",
-    inputs: [],
-    inputSchema: z.object({}),
+    status: "live",
+    mode: "direct",
+    tags: ["people-intelligence", "recruiting", "sync"],
+    inputs: [
+      {
+        name: "full_name",
+        label: "Full name",
+        placeholder: "Saarth Shah",
+        type: "text",
+        defaultValue: "Saarth Shah",
+        description: "First and last name.",
+      },
+      {
+        name: "company",
+        label: "Current company",
+        placeholder: "Sixtyfour",
+        type: "text",
+        defaultValue: "Sixtyfour",
+        description: "Where they work right now.",
+      },
+      {
+        name: "linkedin_url",
+        label: "LinkedIn URL (optional)",
+        placeholder: "https://linkedin.com/in/sarah-chen",
+        type: "url",
+        description: "Adding a LinkedIn URL significantly improves match accuracy.",
+      },
+    ],
+    inputSchema: z.object({
+      full_name: z.string().min(2, "full_name is required").max(200),
+      company: z.string().min(1, "company is required").max(200),
+      linkedin_url: z
+        .string()
+        .max(500)
+        .optional()
+        .transform((v) => (v && v.trim().length > 0 ? v.trim() : undefined)),
+    }),
+    sampleOutputPath: "talent/passive-candidate-finder/sample-output.json",
+    standalonePath: "demos/talent/passive-candidate-finder",
+    outputBrief:
+      "A structured profile covering current role, seniority, skills, career narrative, contact signals, open-to-work indicators, and a recruiter-ready one-liner on why to reach out.",
   },
   {
     slug: "kyb-report",

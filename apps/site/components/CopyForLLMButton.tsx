@@ -22,7 +22,7 @@ export function CopyForLLMButton({ prompt }: CopyForLLMButtonProps) {
 
   return (
     <Button variant="secondary" onClick={onCopy} aria-live="polite">
-      {copied ? "Copied" : "Copy prompt to build this"}
+      {copied ? "Copied" : "Copy agent prompt"}
     </Button>
   );
 }

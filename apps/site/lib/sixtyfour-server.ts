@@ -42,6 +42,31 @@ export function getWorkflowIdForDemo(slug: string): string {
 }
 
 /**
+ * Build the people-intelligence `struct` for passive candidate enrichment.
+ * Returns fixed recruiting-focused fields regardless of any user input
+ * (struct is always the same for this demo — users vary by lead_info only).
+ */
+export function buildTalentStruct(): Record<string, string> {
+  return {
+    current_title: "Current job title",
+    current_company: "Current employer",
+    seniority_level: "One of: IC, Senior IC, Staff, Principal, Manager, Director, VP, C-level",
+    years_experience: "Total years of professional experience (integer)",
+    key_skills: "5-8 technical or functional skills, comma-separated",
+    tech_stack: "Technologies they've worked with based on current and recent roles",
+    career_summary: "2-3 sentence career narrative written for a recruiter",
+    notable_achievements: "2-4 bullet strings of standout achievements or projects",
+    education: "Highest degree + institution",
+    linkedin_url: "Confirmed LinkedIn profile URL",
+    email: "Professional email address",
+    open_to_work_signals:
+      "Any public signals of job-seeking activity (posts, profile status, recent departures). 'none found' if absent.",
+    recruiter_note: "One sentence: what makes this person worth reaching out to",
+    last_company_tenure: "How long they've been at current company (e.g. '2 years 3 months')",
+  };
+}
+
+/**
  * Build the company-intelligence `struct` for ICP scoring.
  * The icp_description is embedded in the research_plan context —
  * the struct defines what fields to return.
