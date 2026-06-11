@@ -47,8 +47,12 @@ export class SixtyfourClient {
   /** POST /company-intelligence — synchronous single-company enrichment. */
   async companyIntelligence(
     body: CompanyIntelligenceRequest,
+    options?: { signal?: AbortSignal },
   ): Promise<CompanyIntelligenceResponse> {
-    return this.request<CompanyIntelligenceResponse>("POST", "/company-intelligence", { body });
+    return this.request<CompanyIntelligenceResponse>("POST", "/company-intelligence", {
+      body,
+      signal: options?.signal,
+    });
   }
 
   // -------------------------------------------------------------------------
@@ -58,14 +62,18 @@ export class SixtyfourClient {
   /** POST /people-intelligence — synchronous single-person enrichment. */
   async peopleIntelligence(
     body: PeopleIntelligenceRequest,
+    options?: { signal?: AbortSignal },
   ): Promise<PeopleIntelligenceResponse> {
-    return this.request<PeopleIntelligenceResponse>("POST", "/people-intelligence", { body });
+    return this.request<PeopleIntelligenceResponse>("POST", "/people-intelligence", {
+      body,
+      signal: options?.signal,
+    });
   }
 
   private async request<T>(
     method: "GET" | "POST",
     path: string,
-    options: { body?: unknown } = {},
+    options: { body?: unknown; signal?: AbortSignal } = {},
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const headers: Record<string, string> = {
@@ -82,6 +90,7 @@ export class SixtyfourClient {
       method,
       headers,
       body: bodyInit,
+      signal: options.signal,
     });
 
     const text = await res.text();

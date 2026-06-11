@@ -4,7 +4,18 @@ import * as React from "react";
 
 const STORAGE_KEY = "sixtyfour_api_key";
 
-export function useApiKey() {
+// ---------------------------------------------------------------------------
+// Shared context — all consumers read from / write to the same state instance
+// ---------------------------------------------------------------------------
+
+interface ApiKeyContextValue {
+  apiKey: string;
+  setApiKey: (key: string) => void;
+}
+
+const ApiKeyContext = React.createContext<ApiKeyContextValue | null>(null);
+
+export function ApiKeyProvider({ children }: { children: React.ReactNode }) {
   const [apiKey, setApiKeyState] = React.useState<string>("");
 
   // Read from sessionStorage once mounted (avoids SSR mismatch)
@@ -23,7 +34,17 @@ export function useApiKey() {
     setApiKeyState(trimmed);
   }, []);
 
-  return { apiKey, setApiKey };
+  return (
+    <ApiKeyContext.Provider value={{ apiKey, setApiKey }}>
+      {children}
+    </ApiKeyContext.Provider>
+  );
+}
+
+export function useApiKey(): ApiKeyContextValue {
+  const ctx = React.useContext(ApiKeyContext);
+  if (!ctx) throw new Error("useApiKey must be used inside <ApiKeyProvider>");
+  return ctx;
 }
 
 interface ApiKeyModalProps {

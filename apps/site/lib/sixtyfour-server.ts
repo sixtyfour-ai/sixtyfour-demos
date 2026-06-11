@@ -73,7 +73,7 @@ export function buildIcpStruct(_icpDescription: string): Record<string, string> 
     target_market: "Who they sell to / their ICP",
     notable_signals: "Recent activity (launch, hire, layoff, fundraise) in last 90 days",
     icp_fit_score:
-      `Integer 0–100 scoring this company against the following ICP rubric: "${_icpDescription}". A score >= 75 is "strong", 50-74 "moderate", 25-49 "weak", < 25 "unfit".`,
+      `Integer 0–100 scoring this company against the following ICP rubric: "${_icpDescription.replace(/"/g, '\\"')}". A score >= 75 is "strong", 50-74 "moderate", 25-49 "weak", < 25 "unfit".`,
     icp_verdict: "One of: strong | moderate | weak | unfit",
     icp_reasoning:
       "2–4 sentences explaining the fit score, citing specific company facts from above",

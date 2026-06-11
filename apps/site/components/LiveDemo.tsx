@@ -419,19 +419,11 @@ async function runDirect(
 ) {
   const start = Date.now();
 
-  // #region agent log
-  fetch('http://127.0.0.1:7721/ingest/1fd34063-8b17-4dba-a9e0-2f8515df0bbb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'228a5f'},body:JSON.stringify({sessionId:'228a5f',location:'LiveDemo.tsx:runDirect-entry',message:'runDirect called',data:{slug,formKeys:Object.keys(form),apiKeyLen:apiKey.length,apiKeyPresent:apiKey.length>0},hypothesisId:'H-A,H-E',timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
-
   const res = await fetch(`/api/demo/${slug}/run`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...form, _api_key: apiKey }),
   });
-
-  // #region agent log
-  fetch('http://127.0.0.1:7721/ingest/1fd34063-8b17-4dba-a9e0-2f8515df0bbb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'228a5f'},body:JSON.stringify({sessionId:'228a5f',location:'LiveDemo.tsx:runDirect-response',message:'fetch response received',data:{status:res.status,ok:res.ok,hasBody:!!res.body,contentType:res.headers.get('content-type')},hypothesisId:'H-C,H-D',timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
 
   // Non-streaming error (e.g. 422 validation, 503 no API key)
   if (!res.ok || !res.body) {

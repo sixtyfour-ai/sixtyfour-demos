@@ -63,7 +63,7 @@ async function main() {
 
   const struct: Record<string, string> = {
     ...ICP_STRUCT_FIELDS,
-    icp_fit_score: `Integer 0–100 scoring this company against the following ICP rubric: "${icpDescription}". A score >= 75 is "strong", 50-74 "moderate", 25-49 "weak", < 25 "unfit".`,
+    icp_fit_score: `Integer 0–100 scoring this company against the following ICP rubric: "${icpDescription.replace(/"/g, '\\"')}". A score >= 75 is "strong", 50-74 "moderate", 25-49 "weak", < 25 "unfit".`,
     icp_verdict: "One of: strong | moderate | weak | unfit",
     icp_reasoning:
       "2–4 sentences explaining the fit score, citing specific company facts from above",

@@ -28,7 +28,7 @@ try {
   const envFile = readFileSync(resolve(__dir, ".env"), "utf-8");
   for (const line of envFile.split("\n")) {
     const [key, ...rest] = line.trim().split("=");
-    if (key && !key.startsWith("#") && rest.length > 0) {
+    if (key && !key.startsWith("#") && rest.length > 0 && !(key in process.env)) {
       process.env[key] = rest.join("=");
     }
   }

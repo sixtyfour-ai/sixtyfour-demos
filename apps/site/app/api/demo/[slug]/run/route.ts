@@ -11,6 +11,23 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/** Safe user-facing message — never forward raw upstream API bodies. */
+function userFacingEnrichmentError(err: unknown): string {
+  if (err instanceof SixtyfourApiError) {
+    if (err.status === 401 || err.status === 403) {
+      return "Invalid API key. Check your key in the API key settings.";
+    }
+    if (err.status === 429) {
+      return "Rate limit exceeded. Try again in a few minutes.";
+    }
+    if (err.status >= 500) {
+      return "Sixtyfour is temporarily unavailable. Try again shortly.";
+    }
+    return "Enrichment failed. Check your inputs and API key, then try again.";
+  }
+  return "Enrichment failed. Try again or check your API key.";
+}
+
 /**
  * POST /api/demo/[slug]/run — kick off a demo run.
  *
@@ -72,6 +89,14 @@ export async function POST(
     encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
 
   const slug = params.slug;
+  const abortController = new AbortController();
+  const { signal } = abortController;
+
+  if (req.signal.aborted) {
+    abortController.abort();
+  } else {
+    req.signal.addEventListener("abort", () => abortController.abort(), { once: true });
+  }
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -110,17 +135,20 @@ export async function POST(
               progress: 15,
             }),
           );
-          console.log("[run/sse] calling /people-intelligence for", input.full_name, "@", input.company);
-          const piResult = await client.peopleIntelligence({
-            lead_info: {
-              full_name: input.full_name,
-              company: input.company,
-              ...(input.linkedin_url ? { linkedin_url: input.linkedin_url } : {}),
+          console.log("[run/sse] calling /people-intelligence", { slug });
+          const piResult = await client.peopleIntelligence(
+            {
+              lead_info: {
+                full_name: input.full_name,
+                company: input.company,
+                ...(input.linkedin_url ? { linkedin_url: input.linkedin_url } : {}),
+              },
+              struct: buildTalentStruct(),
+              tier: "low",
             },
-            struct: buildTalentStruct(),
-            tier: "low",
-          });
-          console.log("[run/sse] enrichment complete for", input.full_name);
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "people-intelligence" });
           result = (piResult.structured_data ?? piResult) as Record<string, unknown>;
         } else {
           const input = parsed.data as { domain: string; icp_description: string };
@@ -131,13 +159,16 @@ export async function POST(
               progress: 15,
             }),
           );
-          console.log("[run/sse] calling /company-intelligence for", input.domain);
-          const ciResult = await client.companyIntelligence({
-            target_company: { website: input.domain },
-            struct: buildIcpStruct(input.icp_description),
-            tier: "low" as const,
-          });
-          console.log("[run/sse] enrichment complete for", input.domain);
+          console.log("[run/sse] calling /company-intelligence", { slug });
+          const ciResult = await client.companyIntelligence(
+            {
+              target_company: { website: input.domain },
+              struct: buildIcpStruct(input.icp_description),
+              tier: "low" as const,
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
           result = (ciResult.structured_data ?? ciResult) as Record<string, unknown>;
         }
 
@@ -145,18 +176,28 @@ export async function POST(
         controller.enqueue(sseEvent("result", { status: "completed", result }));
       } catch (err) {
         clearHb();
-        let message = "Enrichment failed";
-        if (err instanceof SixtyfourApiError) {
-          message = err.message;
-        } else if (err instanceof Error) {
-          message = err.message;
+        if (signal.aborted) {
+          console.log("[run/sse] enrichment aborted (client disconnected or cancelled)");
+          return;
         }
-        console.error("[run/sse] error:", message);
+        if (err instanceof SixtyfourApiError) {
+          console.error("[run/sse] SixtyfourApiError", {
+            status: err.status,
+            code: err.code,
+            message: err.message,
+          });
+        } else {
+          console.error("[run/sse] error:", err);
+        }
+        const message = userFacingEnrichmentError(err);
         controller.enqueue(sseEvent("error", { status: "failed", error: message }));
       } finally {
         clearHb();
         controller.close();
       }
+    },
+    cancel() {
+      abortController.abort();
     },
   });
 
