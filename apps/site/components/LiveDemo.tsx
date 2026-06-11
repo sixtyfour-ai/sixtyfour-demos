@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Badge, Button, Card, CardContent } from "@sixtyfour-demos/ui";
 import type { Demo } from "../lib/demos";
+import { useApiKey, ApiKeyModal } from "./ApiKeyModal";
 
 export type SerializableDemo = Omit<Demo, "inputSchema">;
 import { formatPercent } from "../lib/utils";
@@ -43,7 +44,8 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
   const [elapsed, setElapsed] = React.useState(0);
   const [debugOpen, setDebugOpen] = React.useState(false);
   const cancelledRef = React.useRef(false);
-
+  const { apiKey } = useApiKey();
+  const [keyModalOpen, setKeyModalOpen] = React.useState(false);
   // Highlighted JSON for the result panel — starts with the server-pre-highlighted sample,
   // then updates client-side via Shiki whenever a live result lands.
   const [highlightedResult, setHighlightedResult] = React.useState<string | undefined>(
@@ -115,6 +117,10 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!apiKey) {
+      setKeyModalOpen(true);
+      return;
+    }
     setRun({
       status: "starting",
       progress: 0,
@@ -128,7 +134,7 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
     setElapsed(0);
     cancelledRef.current = false;
     try {
-      await runDirect(demo.slug, form, setRun, cancelledRef);
+      await runDirect(demo.slug, form, apiKey, setRun, cancelledRef);
     } catch (err) {
       setRun((r) => ({
         ...r,
@@ -144,6 +150,7 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
 
   return (
     <>
+    <ApiKeyModal open={keyModalOpen} onClose={() => setKeyModalOpen(false)} />
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
       {/* Input form */}
       <Card className="lg:col-span-2">
@@ -186,6 +193,26 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
                 )}
               </div>
             ))}
+            {!apiKey && !isRunning && (
+              <button
+                type="button"
+                onClick={() => setKeyModalOpen(true)}
+                className="flex w-full items-center gap-2 rounded-md border border-amber-800/60 bg-amber-950/40 px-3 py-2.5 text-left text-sm text-amber-300 transition-colors hover:border-amber-700 hover:bg-amber-950/60"
+              >
+                <span className="text-base leading-none">⚠</span>
+                <span>Add your Sixtyfour API key to run this demo</span>
+              </button>
+            )}
+            {apiKey && !isRunning && (
+              <button
+                type="button"
+                onClick={() => setKeyModalOpen(true)}
+                className="flex w-full items-center gap-2 rounded-md border border-green-800/60 bg-green-950/40 px-3 py-2.5 text-left text-sm text-green-400 transition-colors hover:border-green-700 hover:bg-green-950/60"
+              >
+                <span className="text-base leading-none">✓</span>
+                <span>API key added</span>
+              </button>
+            )}
             <Button type="submit" disabled={isRunning} className="w-full">
               {isRunning ? "Running…" : "Run demo"}
             </Button>
@@ -386,16 +413,25 @@ function ActivityLog({ entries }: { entries: string[] }) {
 async function runDirect(
   slug: string,
   form: Record<string, string>,
+  apiKey: string,
   setRun: React.Dispatch<React.SetStateAction<RunState>>,
   cancelledRef: React.RefObject<boolean>,
 ) {
   const start = Date.now();
 
+  // #region agent log
+  fetch('http://127.0.0.1:7721/ingest/1fd34063-8b17-4dba-a9e0-2f8515df0bbb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'228a5f'},body:JSON.stringify({sessionId:'228a5f',location:'LiveDemo.tsx:runDirect-entry',message:'runDirect called',data:{slug,formKeys:Object.keys(form),apiKeyLen:apiKey.length,apiKeyPresent:apiKey.length>0},hypothesisId:'H-A,H-E',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+
   const res = await fetch(`/api/demo/${slug}/run`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(form),
+    body: JSON.stringify({ ...form, _api_key: apiKey }),
   });
+
+  // #region agent log
+  fetch('http://127.0.0.1:7721/ingest/1fd34063-8b17-4dba-a9e0-2f8515df0bbb',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'228a5f'},body:JSON.stringify({sessionId:'228a5f',location:'LiveDemo.tsx:runDirect-response',message:'fetch response received',data:{status:res.status,ok:res.ok,hasBody:!!res.body,contentType:res.headers.get('content-type')},hypothesisId:'H-C,H-D',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   // Non-streaming error (e.g. 422 validation, 503 no API key)
   if (!res.ok || !res.body) {

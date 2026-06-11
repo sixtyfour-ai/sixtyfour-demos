@@ -4,21 +4,28 @@ import { SixtyfourClient } from "@sixtyfour-demos/api-client";
  * Server-only Sixtyfour helpers.
  *
  * NEVER import this module from a Client Component or any code that ends
- * up bundled for the browser — it reads the SIXTYFOUR_API_KEY env var.
+ * up bundled for the browser.
+ *
+ * Key resolution order:
+ *   1. `apiKey` argument — passed from the request body (BYOK / hosted site)
+ *   2. `SIXTYFOUR_API_KEY` env var — used when running locally via `pnpm dev`
+ *
+ * This means the hosted site at demos.sixtyfour.ai never needs a server-side
+ * API key; each visitor supplies their own. Local dev still works with a
+ * .env file for convenience.
  */
 
 export class ServerConfigError extends Error {}
 
-export function getSixtyfourClient(): SixtyfourClient {
-  const apiKey = process.env.SIXTYFOUR_API_KEY;
-  if (!apiKey || apiKey.length === 0) {
+export function getSixtyfourClient(apiKey?: string): SixtyfourClient {
+  const key = apiKey ?? process.env.SIXTYFOUR_API_KEY;
+  if (!key || key.length === 0) {
     throw new ServerConfigError(
-      "SIXTYFOUR_API_KEY is not set on the server. " +
-        "Add it to your Vercel project's environment variables (or .env.local for local dev).",
+      "No API key provided. Add your Sixtyfour API key in the settings panel, or set SIXTYFOUR_API_KEY in .env for local development.",
     );
   }
   return new SixtyfourClient({
-    apiKey,
+    apiKey: key,
     baseUrl: process.env.SIXTYFOUR_API_BASE_URL,
   });
 }

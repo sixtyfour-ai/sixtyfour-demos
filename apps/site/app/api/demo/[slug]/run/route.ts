@@ -14,12 +14,12 @@ export const dynamic = "force-dynamic";
 /**
  * POST /api/demo/[slug]/run — kick off a demo run.
  *
- * All live demos use "direct" mode: calls the sync enrichment endpoint and
- * streams the result back as Server-Sent Events (SSE). The stream sends
- * heartbeat pings every few seconds while the enrichment runs, then emits
- * a single "result" event with the completed data.
+ * Expects a JSON body with the demo's input fields plus an optional
+ * `_api_key` field containing the caller's Sixtyfour API key. If absent,
+ * the server falls back to the SIXTYFOUR_API_KEY env var (local dev only).
  *
- * The Sixtyfour API key never leaves the server.
+ * The API key is used for a single enrichment call and is never logged
+ * or persisted. Results stream back as Server-Sent Events (SSE).
  */
 export async function POST(
   req: Request,
@@ -30,14 +30,20 @@ export async function POST(
     return NextResponse.json({ error: "demo not found" }, { status: 404 });
   }
 
-  let body: unknown;
+  let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = await req.json() as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: "invalid JSON body" }, { status: 400 });
   }
 
-  const parsed = demo.inputSchema.safeParse(body);
+  // Extract and remove _api_key before schema validation so demo schemas
+  // don't need to declare it.
+  const apiKey = typeof body._api_key === "string" ? body._api_key.trim() : undefined;
+  const { _api_key: _removed, ...inputBody } = body;
+  void _removed;
+
+  const parsed = demo.inputSchema.safeParse(inputBody);
   if (!parsed.success) {
     return NextResponse.json(
       {
@@ -53,10 +59,10 @@ export async function POST(
 
   let client: ReturnType<typeof getSixtyfourClient>;
   try {
-    client = getSixtyfourClient();
+    client = getSixtyfourClient(apiKey);
   } catch (err) {
     if (err instanceof ServerConfigError) {
-      return NextResponse.json({ error: err.message }, { status: 503 });
+      return NextResponse.json({ error: err.message }, { status: 401 });
     }
     throw err;
   }
