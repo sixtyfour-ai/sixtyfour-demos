@@ -1,19 +1,24 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
+.pnpm-store
+
+# turborepo
+.turbo
 
 # testing
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
-# production
+# production builds
 /build
+dist/
 
 # misc
 .DS_Store
@@ -23,6 +28,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -89,4 +95,3 @@ dmypy.json
 .ipynb_checkpoints
 pip-log.txt
 pip-delete-this-directory.txt
-

@@ -1,65 +1,100 @@
-# Contributing to Sixtyfour Open Source Projects
+# Contributing to sixtyfour-demos
 
-Thank you for your interest in contributing! We welcome contributions from the community — bug reports, feature requests, documentation improvements, and code changes are all appreciated.
-
-Please read this guide before opening a pull request.
+PRs, bug reports, and doc improvements are welcome. Please read this guide before opening one.
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating you agree to abide by its terms. Please report unacceptable behavior to [support@sixtyfour.ai](mailto:support@sixtyfour.ai).
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). Report unacceptable behavior to [support@sixtyfour.ai](mailto:support@sixtyfour.ai).
 
-## Getting Started
+## Local setup
 
-1. **Fork** the repository to your own GitHub account.
-2. **Clone** your fork locally:
-   ```bash
-   git clone https://github.com/<your-username>/<repo-name>.git
-   cd <repo-name>
-   ```
-3. **Create a branch** from `main` using a descriptive name:
-   ```bash
-   git checkout -b feat/short-description   # new feature
-   git checkout -b fix/short-description    # bug fix
-   git checkout -b docs/short-description   # documentation
-   ```
-4. Make your changes, then **commit** with a clear message:
-   ```bash
-   git commit -m "fix: correct API key validation logic"
-   ```
-5. **Push** your branch and open a **Pull Request** against `main` on the upstream repo.
+Prerequisites: Node 20+ and pnpm 9+.
 
-## Pull Request Guidelines
+```bash
+git clone https://github.com/sixtyfour-ai/sixtyfour-demos.git
+cd sixtyfour-demos
 
-- Keep PRs focused — one logical change per PR.
-- Fill out the pull request template completely.
-- All PRs require **at least one approving review** before merging.
-- Ensure your branch is up to date with `main` before requesting review.
-- Head branches are deleted automatically after merge — no manual cleanup needed.
-- Link any related issues in the PR description using `Closes #<issue-number>`.
+cp .env.example .env
+# paste your SIXTYFOUR_API_KEY — get one at https://app.sixtyfour.ai/keys
 
-## Reporting Bugs
+pnpm install
+pnpm dev         # http://localhost:3000
+```
 
-Open a [GitHub Issue](../../issues) and include:
+Before opening a PR, run:
 
-- A clear title and description
+```bash
+pnpm lint
+pnpm typecheck
+pnpm turbo build
+```
+
+CI runs the same three commands. Anything red there is red on review.
+
+## Adding a new demo
+
+A demo is a standalone workspace under `demos/<category>/<slug>/`. Copy `demos/sales-gtm/icp-qualifier` as your starting point.
+
+Each demo ships these files:
+
+| File | What it is |
+|---|---|
+| `main.ts` | Standalone script — reads `SIXTYFOUR_API_KEY` from `.env`, runs the enrichment, prints structured output |
+| `snippets.ts` | Canonical JS / Python / cURL snippets shown on the demo page |
+| `sample-output.json` | A real, recorded result that renders on first page load |
+| `README.md` | The launching pad — see "README expectations" below |
+| `.env.example` | `SIXTYFOUR_API_KEY` plus any demo-specific config |
+| `package.json` + `tsconfig.json` | Boilerplate; copy from ICP Qualifier |
+
+After your files are in place:
+
+1. **Register it** — add a `Demo` entry to `apps/site/lib/demos.ts`. Use `status: "coming-soon"` while you build; flip to `"live"` when ready.
+2. **Wire sample output** — static-import your `sample-output.json` in `apps/site/lib/sample-outputs.ts`.
+3. **Wire snippets** — re-export your snippets keyed by slug in `apps/site/lib/snippets.ts`.
+4. **Add the API dispatch** — add a branch for your slug in `apps/site/app/api/demo/[slug]/run/route.ts` that calls the appropriate Sixtyfour endpoint and streams the result via SSE.
+5. **Smoke test** — `pnpm dev`, click your card, click Run, confirm the live result populates.
+
+### README expectations
+
+Every demo README must contain:
+
+- **What it does** — 1 paragraph in plain English. No fluff.
+- **What you get back** — a real JSON example, copy-pasted from a live run.
+- **2-minute setup** — the commands that get to a working result.
+- **The API call, exposed** — show the raw `fetch` calls. Devs need to see what's happening on the wire.
+- **Extend this** — 3–5 concrete ideas (swap inputs, batch, add Slack, persist results, change tier, etc.).
+
+### Recording a `sample-output.json`
+
+Run `pnpm start` against real input once your demo is working and save the printed JSON to `sample-output.json`. The site renders this file as the cached output on first page load — a stale or fake sample makes the demo feel broken.
+
+## PR guidelines
+
+- Keep PRs focused. One demo per PR. Refactors and chores in their own PRs.
+- Confirm `pnpm lint && pnpm typecheck && pnpm turbo build` are green locally.
+- Confirm `pnpm dev` renders your demo card and the demo page works end-to-end.
+- All PRs require at least one approving review before merging.
+- Link related issues with `Closes #<n>`.
+
+## Reporting bugs
+
+Open a [GitHub Issue](../../issues) with:
+
+- Clear title + description
 - Steps to reproduce
-- Expected vs. actual behavior
-- Your environment (OS, runtime version, etc.)
+- Expected vs actual behavior
+- Your environment (Node version, OS, browser if applicable)
 
-## Suggesting Features
+## Suggesting features
 
-Open a [GitHub Issue](../../issues) with the label `enhancement` and describe:
+Open a [GitHub Issue](../../issues) labeled `enhancement`. For new demo ideas, an issue first is welcome — we'll help scope before you build.
 
-- The problem you're trying to solve
-- Your proposed solution
-- Any alternatives you've considered
+## Development tips
 
-## Development Tips
+- Copy any `.env.example` to `.env` locally and never commit secrets.
+- The site proxies all Sixtyfour API calls server-side — never call `api.sixtyfour.ai` from a Client Component.
+- Demo results stream to the browser via SSE from `/api/demo/[slug]/run`.
 
-- Copy `.env.example` to `.env` and fill in your credentials — never commit real secrets.
-- You will need a Sixtyfour API key to run most projects locally. See [Getting an API Key](https://docs.sixtyfour.ai/get-api-key).
-- Refer to the [Sixtyfour documentation](https://docs.sixtyfour.ai/introduction) for platform details.
+## Questions
 
-## Questions?
-
-If you have a question that isn't a bug or feature request, feel free to open a discussion or reach out at [support@sixtyfour.ai](mailto:support@sixtyfour.ai).
+Open a discussion or email [support@sixtyfour.ai](mailto:support@sixtyfour.ai).

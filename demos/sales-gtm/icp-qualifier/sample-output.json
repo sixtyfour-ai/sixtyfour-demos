@@ -1,0 +1,34 @@
+{
+  "company_name": "Ramp",
+  "industry": "Fintech / Spend Management",
+  "headquarters": "New York, NY, United States",
+  "employee_count": "1800",
+  "employee_count_range": "1000+",
+  "annual_revenue_estimate": "$300M+ ARR (2024 estimate, per industry reports)",
+  "funding_stage": "Series D",
+  "last_funding_round": "Series D — $150M at $7.65B valuation, led by Khosla Ventures",
+  "last_funding_date": "2023-03",
+  "primary_buyer_persona": "CFO / VP Finance / Finance Ops",
+  "tech_stack_signals": "React, TypeScript, Python, AWS, Snowflake, Plaid",
+  "key_products_or_services": "Corporate cards, expense management, bill pay, and procurement automation for businesses",
+  "target_market": "Mid-market and enterprise companies in the US seeking to automate spend management",
+  "notable_signals": "Launched AI-powered procurement product (2024); acquired Cohere.io for AI customer support; headcount grew ~40% YoY",
+  "icp_fit_score": "72",
+  "icp_verdict": "moderate",
+  "icp_reasoning": "Ramp is a US-headquartered B2B fintech SaaS company with strong recent funding (Series D, 2023) and a clear Finance Ops buyer persona — matching most ICP criteria. However, headcount (~1800) significantly exceeds the 50–500 ceiling, and the Series D stage is beyond 'Series B+' if interpreted strictly. The technical buyer focus is in finance rather than engineering.",
+  "icp_key_facts": [
+    "US HQ (New York)",
+    "B2B SaaS / fintech vertical",
+    "Series D raised within last 24 months",
+    "~1800 employees",
+    "$300M+ estimated ARR",
+    "Primary buyer: CFO / Finance Ops",
+    "Strong product-led growth signals",
+    "Active in AI/automation expansion"
+  ],
+  "icp_mismatches": [
+    "Headcount ~1800 exceeds the 50–500 employee ceiling",
+    "Series D is beyond the 'Series B+' floor (interpretation-dependent)",
+    "Buyer persona is finance-focused, not engineering"
+  ]
+}

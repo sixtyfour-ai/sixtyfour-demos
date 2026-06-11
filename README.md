@@ -1,105 +1,132 @@
-# How To Use This Template
+# Sixtyfour Demos
 
-> Remove after setting up a new repo from this template
-
-[Watch demo on Loom](https://www.loom.com/share/372d7dd58d254b63b751fde366ab774c)
-
-# [Project Name]
-
-> One-line description of what this project does and who it's for.
+> Open-source demos for the [Sixtyfour API](https://docs.sixtyfour.ai). Clone, run, fork, ship.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Overview
+Every demo is a working end-to-end Sixtyfour API integration you can run in under two minutes. Each one has:
 
-<!-- Replace this with a 2–3 sentence description of the project. What problem does it solve? What does a user get out of it? -->
+- A canonical TypeScript script you can run locally (`pnpm start`)
+- A README that's a launching pad — not a placeholder
+- A live page on [demos.sixtyfour.ai](https://demos.sixtyfour.ai) that runs against your own API key
 
-## Getting Started
+## Demos
 
-### Prerequisites
+| Category | Demo | Status |
+|---|---|---|
+| Sales / GTM | [ICP Qualifier](demos/sales-gtm/icp-qualifier) — score any company against your ICP rubric | Live |
+| Talent | [Passive Candidate Finder](demos/talent/passive-candidate-finder) — recruiter-ready profile from a name + company | Live |
+| Compliance / KYB | KYB Report | Coming soon |
+| Security | Threat Actor Footprint | Coming soon |
+| Entity / Financial Intel | Founder Background Check | Coming soon |
+| Entity / Financial Intel | Competitive Org Intel | Coming soon |
 
-<!-- List what a user needs before they can run this project. Examples: -->
-
-- Node.js 18+ or Python 3.10+
-- A Sixtyfour API key ([get one here](https://docs.sixtyfour.ai/get-api-key))
-
-### Installation
+## Quick start
 
 ```bash
-# Clone the repository
-git clone https://github.com/sixtyfour-ai/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/sixtyfour-ai/sixtyfour-demos.git
+cd sixtyfour-demos
 
-# Install dependencies (Node.js example)
-npm install
-
-# Copy the environment variable template
 cp .env.example .env
+# paste your SIXTYFOUR_API_KEY — get one at https://app.sixtyfour.ai/keys
+
+pnpm install
+pnpm dev          # opens the demo hub at http://localhost:3000
 ```
 
-Then open `.env` and add your Sixtyfour API key:
-
-```
-SIXTYFOUR_API_KEY=your_api_key_here
-```
-
-### Running the project
+Or run a single demo standalone, without spinning up the site:
 
 ```bash
-# Node.js example
-npm run dev
-
-# Python example
-python main.py
+cd demos/sales-gtm/icp-qualifier
+cp .env.example .env
+# paste your SIXTYFOUR_API_KEY
+pnpm install
+pnpm start
 ```
 
-## Getting an API Key
+Every demo follows the same setup.
 
-To use this project you will need a Sixtyfour API key.
+## Repo layout
 
-1. Sign up or log in at [sixtyfour.ai](https://sixtyfour.ai)
-2. Follow the instructions at [docs.sixtyfour.ai/get-api-key](https://docs.sixtyfour.ai/get-api-key)
+```
+sixtyfour-demos/
+├── apps/
+│   └── site/                    # Next.js 14 demo hub → demos.sixtyfour.ai
+├── demos/
+│   ├── sales-gtm/icp-qualifier/
+│   └── talent/passive-candidate-finder/
+├── packages/
+│   ├── api-client/              # Thin fetch wrapper around api.sixtyfour.ai
+│   ├── ui/                      # Shared shadcn-style React primitives
+│   └── utils/                   # Snippet helpers
+└── scripts/                     # Reserved for future tooling
+```
+
+Each demo is a standalone workspace. Adding a new demo means one folder under `demos/<category>/<slug>/` and one entry in `apps/site/lib/demos.ts`.
+
+## How a demo is wired up
+
+Each demo calls the Sixtyfour API directly (synchronous enrichment) and ships these files:
+
+```
+demos/<category>/<slug>/
+├── main.ts              # Standalone script: reads API key from .env, runs the enrichment
+├── README.md            # 2-min setup + extend ideas (the "launching pad")
+├── snippets.ts          # JS / Python / cURL canonical snippets shown on the demo page
+├── sample-output.json   # Cached result rendered on the demo page before a live run
+└── .env.example         # SIXTYFOUR_API_KEY + any demo-specific config
+```
+
+The site at `apps/site` reads `lib/demos.ts` (the registry) and renders one card per demo. Each demo page renders `sample-output.json` instantly and then runs a real enrichment on click via SSE — the API key never reaches the browser, every Sixtyfour call goes through `/api/demo/[slug]/run`.
+
+## Add a new demo
+
+1. Pick a category folder under `demos/` (or add one).
+2. Create `demos/<category>/<your-slug>/` with the files above. Copy `demos/sales-gtm/icp-qualifier` as a starting point.
+3. Add a `Demo` entry to `apps/site/lib/demos.ts` matching your slug. Set `status: "coming-soon"` while you build, flip to `"live"` when ready.
+4. Wire it into `apps/site/lib/sample-outputs.ts` and `apps/site/lib/snippets.ts`.
+5. Add the SSE dispatch for your slug in `apps/site/app/api/demo/[slug]/run/route.ts`.
+
+## Environment variables
+
+| Variable | Required | Notes |
+|---|---|---|
+| `SIXTYFOUR_API_KEY` | Yes | Server-only — never exposed to the browser |
+| `SIXTYFOUR_API_BASE_URL` | No | Defaults to `https://api.sixtyfour.ai` |
+| `NEXT_PUBLIC_SITE_URL` | No | Used by page metadata |
+
+See [.env.example](.env.example).
+
+## Deploy your own copy
+
+The site is a stock Next.js 14 app — works on Vercel out of the box.
+
+1. Fork this repo.
+2. Create a Vercel project pointed at the fork.
+3. Set the build command to `pnpm turbo run build --filter=site` and the output directory to `apps/site/.next`.
+4. Add `SIXTYFOUR_API_KEY` to the project's environment variables.
+5. Add a custom domain — CNAME to `cname.vercel-dns.com`.
+
+## Scripts
+
+| Command | What it does |
+|---|---|
+| `pnpm install` | Install workspace dependencies |
+| `pnpm dev` | Run `apps/site` locally on port 3000 |
+| `pnpm build` | Build everything via Turborepo |
+| `pnpm lint` | Lint every workspace |
+| `pnpm typecheck` | Typecheck every workspace |
+| `pnpm format` | Prettier-format the repo |
 
 ## Documentation
 
-Full documentation for the Sixtyfour platform is available at [docs.sixtyfour.ai](https://docs.sixtyfour.ai/introduction).
+- API reference: [docs.sixtyfour.ai](https://docs.sixtyfour.ai/introduction)
+- Get an API key: [app.sixtyfour.ai/keys](https://app.sixtyfour.ai/keys)
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
-
-## Code of Conduct
-
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating you agree to abide by its terms.
+PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
-
-<details>
-<summary><strong>Repo Setup Checklist (for Sixtyfour team — remove this section before publishing)</strong></summary>
-
-When creating a new repo from this template, complete the following steps in **Settings**:
-
-**General**
-- [ ] Set the repository description and topic tags
-- [ ] Uncheck **Wikis**
-- [ ] Uncheck **Projects**
-- [ ] Check **Automatically delete head branches**
-
-**Branch protection — `main`**
-- [ ] Go to **Branches → Add classic branch protection rule** for `main`
-- [ ] Enable **Require a pull request before merging**
-- [ ] Set **Required approvals** to `1`
-- [ ] Enable **Require status checks to pass before merging** (if applicable)
-- [ ] Enable **Do not allow bypassing the above settings**
-
-**After setup**
-- [ ] Replace all `[placeholder]` values in this README
-- [ ] Update `.github/ISSUE_TEMPLATE/config.yml` — change the security `url` to point to this repo's security policy (e.g. `https://github.com/sixtyfour-ai/<repo-name>/security/policy`)
-- [ ] Copy `.env.example` and create a `.env` file with any project-specific environment variables.
-- [ ] Delete this checklist section from the README
-- [ ] Remove how to use this template video link
-
-</details>
-
+MIT — see [LICENSE](LICENSE).
