@@ -1,8 +1,8 @@
 {
-  "name": "@sixtyfour-demos/icp-qualifier",
+  "name": "@sixtyfour-demos/kyb-report",
   "version": "0.1.0",
   "private": true,
-  "description": "Score any company against your ICP rubric in one Sixtyfour API call.",
+  "description": "KYB due-diligence report for any company — ownership, sanctions, and risk verdict in one API call.",
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext .ts",

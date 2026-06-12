@@ -1,21 +1,21 @@
 {
-  "current_title": "Staff Software Engineer",
-  "current_company": "Vercel",
-  "seniority_level": "Staff IC",
-  "years_experience": 11,
-  "key_skills": "TypeScript, React, Next.js, distributed systems, API design, performance optimization, technical mentorship",
-  "tech_stack": "TypeScript, Rust, Go, PostgreSQL, Redis, Kafka, Kubernetes, AWS",
-  "career_summary": "Staff engineer with 11 years of experience, currently leading the edge runtime team at Vercel. Previously built payments infrastructure at Stripe and contributed core routing logic to the Remix framework. Known for turning complex systems problems into clean APIs that other engineers love to use.",
+  "current_title": "CEO & Co-founder",
+  "current_company": "Sixtyfour",
+  "seniority_level": "C-level",
+  "years_experience": 9,
+  "key_skills": "AI product strategy, developer APIs, data enrichment, GTM, fundraising, technical recruiting, PLG",
+  "tech_stack": "Python, TypeScript, LLMs, AWS, REST APIs, PostHog, Next.js",
+  "career_summary": "Co-founder and CEO of Sixtyfour, building API-first people and company intelligence for developers and GTM teams. Previously shipped developer-facing products at early-stage startups; now leads product, engineering direction, and go-to-market for find_email, find_phone, and the in-house Waterfall enrichment API.",
   "notable_achievements": [
-    "Led migration of Vercel's edge runtime from V8 isolates to a custom Rust-based sandbox — reduced cold-start latency by 40%",
-    "At Stripe, owned the idempotency layer for payment processing; now handles >$1B/day",
-    "Authored the RFC that became Next.js App Router's streaming model",
-    "Open source: 3.2k GitHub stars on a TypeScript type-inference utility library"
+    "Founded Sixtyfour and raised $4.1M to build an in-house enrichment stack replacing third-party waterfall dependencies",
+    "Launched find_email and find_phone APIs adopted by PLG and enterprise GTM workflows",
+    "Shipped open-source demos and agent skills to drive developer adoption",
+    "Built Waterfall API as core differentiation vs. legacy enrichment vendors"
   ],
-  "education": "BS Computer Science, University of Washington (2013)",
-  "linkedin_url": "https://linkedin.com/in/example-staff-engineer",
-  "email": "s.chen@vercel.com",
-  "open_to_work_signals": "Posted a thread on X in April 2026 about exploring new opportunities; LinkedIn profile updated 'Open to DMs' in bio. No 'Open to Work' badge but engagement pattern suggests active exploration.",
-  "recruiter_note": "Rare combination of deep systems experience and modern frontend expertise — would be exceptional for any role building developer infrastructure or platform products.",
-  "last_company_tenure": "2 years 8 months"
+  "education": "BS Computer Science (institution not consistently listed in public profiles)",
+  "linkedin_url": "https://linkedin.com/in/saarthshah",
+  "email": "saarth@sixtyfour.ai",
+  "open_to_work_signals": "none found — active CEO building and fundraising; no public job-seeking signals",
+  "recruiter_note": "Founder-level operator with deep API and AI product experience — relevant for executive advisory, investor intros, or partnership conversations rather than a passive hire.",
+  "last_company_tenure": "2+ years (founder tenure at Sixtyfour)"
 }

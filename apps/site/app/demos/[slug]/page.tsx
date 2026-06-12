@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge, Button, Card, CardContent } from "@sixtyfour-demos/ui";
+import { Badge, Button } from "@sixtyfour-demos/ui";
 import { buildCopyForLlmPrompt } from "@sixtyfour-demos/utils";
 import { CATEGORIES, DEMOS, getDemoBySlug, getRelatedDemos } from "../../../lib/demos";
 import { getSampleOutput } from "../../../lib/sample-outputs";
@@ -101,6 +101,22 @@ export default async function DemoPage({ params }: { params: { slug: string } })
           Try it
         </h2>
         <LiveDemo demo={demoData} initialResult={sample} initialHighlightedResult={initialHighlightedResult} />
+        {demo.ctaNote && (
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-blue-900/40 bg-blue-950/30 px-4 py-3 text-sm text-blue-200">
+            <span className="mt-0.5 shrink-0 text-blue-400">✦</span>
+            <p>
+              {demo.ctaNote.text}{" "}
+              <a
+                href={demo.ctaNote.linkHref}
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium text-blue-300 underline-offset-4 hover:underline"
+              >
+                {demo.ctaNote.linkLabel}
+              </a>
+            </p>
+          </div>
+        )}
       </section>
 
       {/* Code snippets */}
@@ -174,26 +190,6 @@ export default async function DemoPage({ params }: { params: { slug: string } })
             ))}
           </div>
         </section>
-      )}
-
-      {/* Coming soon hint if snippets aren't wired yet */}
-      {!snippets && (
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-zinc-300">
-              Snippets are still being authored for this demo. Watch the{" "}
-              <Link
-                href="https://github.com/sixtyfour-ai/sixtyfour-demos"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-300 underline-offset-4 hover:underline"
-              >
-                GitHub repo
-              </Link>
-              .
-            </p>
-          </CardContent>
-        </Card>
       )}
     </article>
   );

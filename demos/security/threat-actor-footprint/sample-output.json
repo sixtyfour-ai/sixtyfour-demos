@@ -1,0 +1,19 @@
+{
+  "full_name": "Saarth Shah",
+  "known_aliases": "saarthshah (GitHub, LinkedIn handle)",
+  "confirmed_emails": "saarth@sixtyfour.ai",
+  "confirmed_phone_numbers": "None found",
+  "social_profiles": "LinkedIn: https://linkedin.com/in/saarthshah\nTwitter/X: @saarthshah\nGitHub: https://github.com/saarthshah",
+  "professional_background": "CEO & Co-founder, Sixtyfour (2023–present)\nPrior: early-stage SaaS startups (product and engineering roles)",
+  "technical_skills": "Python, TypeScript, LLMs, API architecture, product strategy, developer GTM",
+  "forum_and_community_presence": "Active on LinkedIn and Twitter/X; open-source activity on GitHub; no significant presence on security forums or niche underground communities",
+  "dark_web_mentions": "None found",
+  "credential_leak_exposure": "None found in major breach indices",
+  "domain_and_infrastructure": "sixtyfour.ai (registered operator); api.sixtyfour.ai, docs.sixtyfour.ai (subdomains)",
+  "threat_actor_signals": "None found — no associations with threat groups, CVE authorship, or adverse attribution",
+  "legal_and_public_record": "None found — no court records, regulatory actions, or adverse press",
+  "risk_score": "3",
+  "risk_verdict": "none",
+  "risk_summary": "Saarth Shah is a publicly visible tech founder with a clean digital footprint. No adverse signals were identified across breach databases, dark web sources, or public records. The minimal score reflects standard founder-level public presence with no threat indicators.",
+  "data_sources_note": "LinkedIn, Twitter/X, GitHub, HaveIBeenPwned index, WHOIS, press sources, Google News. Dark web scan limited to indexed sources; private forums not accessible."
+}

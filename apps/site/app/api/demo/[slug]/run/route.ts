@@ -6,6 +6,8 @@ import {
   getSixtyfourClient,
   buildIcpStruct,
   buildTalentStruct,
+  buildKybStruct,
+  buildThreatActorStruct,
 } from "../../../../../lib/sixtyfour-server";
 
 export const runtime = "nodejs";
@@ -150,6 +152,54 @@ export async function POST(
           );
           console.log("[run/sse] enrichment complete", { slug, endpoint: "people-intelligence" });
           result = (piResult.structured_data ?? piResult) as Record<string, unknown>;
+        } else if (slug === "threat-actor-footprint") {
+          const input = parsed.data as {
+            full_name: string;
+            email?: string;
+            linkedin_url?: string;
+          };
+          controller.enqueue(
+            sseEvent("status", {
+              status: "running",
+              message: `Mapping footprint for ${input.full_name}…`,
+              progress: 15,
+            }),
+          );
+          console.log("[run/sse] calling /people-intelligence", { slug });
+          const threatResult = await client.peopleIntelligence(
+            {
+              lead_info: {
+                full_name: input.full_name,
+                ...(input.email ? { email: input.email } : {}),
+                ...(input.linkedin_url ? { linkedin_url: input.linkedin_url } : {}),
+              },
+              struct: buildThreatActorStruct(),
+              tier: "low",
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "people-intelligence" });
+          result = (threatResult.structured_data ?? threatResult) as Record<string, unknown>;
+        } else if (slug === "kyb-report") {
+          const input = parsed.data as { domain: string };
+          controller.enqueue(
+            sseEvent("status", {
+              status: "running",
+              message: `Running KYB check on ${input.domain}…`,
+              progress: 15,
+            }),
+          );
+          console.log("[run/sse] calling /company-intelligence", { slug });
+          const kybResult = await client.companyIntelligence(
+            {
+              target_company: { website: input.domain },
+              struct: buildKybStruct(),
+              tier: "low" as const,
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
+          result = (kybResult.structured_data ?? kybResult) as Record<string, unknown>;
         } else {
           const input = parsed.data as { domain: string; icp_description: string };
           controller.enqueue(
