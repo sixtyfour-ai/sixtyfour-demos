@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Badge, Button, Card, CardContent } from "@sixtyfour-demos/ui";
+import { Badge, Button } from "@sixtyfour-demos/ui";
 import { buildCopyForLlmPrompt } from "@sixtyfour-demos/utils";
 import { CATEGORIES, DEMOS, getDemoBySlug, getRelatedDemos } from "../../../lib/demos";
 import { getSampleOutput } from "../../../lib/sample-outputs";
