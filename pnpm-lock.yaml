@@ -105,6 +105,9 @@ importers:
       '@sixtyfour-demos/api-client':
         specifier: workspace:*
         version: link:../../../packages/api-client
+      '@sixtyfour-demos/utils':
+        specifier: workspace:*
+        version: link:../../../packages/utils
     devDependencies:
       '@types/node':
         specifier: ^20.14.10
@@ -124,6 +127,9 @@ importers:
       '@sixtyfour-demos/api-client':
         specifier: workspace:*
         version: link:../../../packages/api-client
+      '@sixtyfour-demos/utils':
+        specifier: workspace:*
+        version: link:../../../packages/utils
     devDependencies:
       '@types/node':
         specifier: ^20.14.10
@@ -143,6 +149,9 @@ importers:
       '@sixtyfour-demos/api-client':
         specifier: workspace:*
         version: link:../../../packages/api-client
+      '@sixtyfour-demos/utils':
+        specifier: workspace:*
+        version: link:../../../packages/utils
     devDependencies:
       '@types/node':
         specifier: ^20.14.10
@@ -162,6 +171,9 @@ importers:
       '@sixtyfour-demos/api-client':
         specifier: workspace:*
         version: link:../../../packages/api-client
+      '@sixtyfour-demos/utils':
+        specifier: workspace:*
+        version: link:../../../packages/utils
     devDependencies:
       '@types/node':
         specifier: ^20.14.10

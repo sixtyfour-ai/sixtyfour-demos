@@ -248,13 +248,15 @@ export const DEMOS: Demo[] = [
       email: z
         .string()
         .max(500)
-        .optional()
-        .transform((v) => (v && v.trim().length > 0 ? v.trim() : undefined)),
+        .transform((v) => v.trim())
+        .pipe(z.union([z.literal(""), z.string().email("must be a valid email address")]))
+        .transform((v) => (v.length > 0 ? v : undefined)),
       linkedin_url: z
         .string()
         .max(500)
-        .optional()
-        .transform((v) => (v && v.trim().length > 0 ? v.trim() : undefined)),
+        .transform((v) => v.trim())
+        .pipe(z.union([z.literal(""), z.string().url("must be a valid URL")]))
+        .transform((v) => (v.length > 0 ? v : undefined)),
     }),
     sampleOutputPath: "security/threat-actor-footprint/sample-output.json",
     standalonePath: "demos/security/threat-actor-footprint",

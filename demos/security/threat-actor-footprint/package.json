@@ -11,7 +11,8 @@
     "start": "tsx main.ts"
   },
   "dependencies": {
-    "@sixtyfour-demos/api-client": "workspace:*"
+    "@sixtyfour-demos/api-client": "workspace:*",
+    "@sixtyfour-demos/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
