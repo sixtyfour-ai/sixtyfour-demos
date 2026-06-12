@@ -175,26 +175,6 @@ export default async function DemoPage({ params }: { params: { slug: string } })
           </div>
         </section>
       )}
-
-      {/* Coming soon hint if snippets aren't wired yet */}
-      {!snippets && (
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-zinc-300">
-              Snippets are still being authored for this demo. Watch the{" "}
-              <Link
-                href="https://github.com/sixtyfour-ai/sixtyfour-demos"
-                target="_blank"
-                rel="noreferrer"
-                className="text-blue-300 underline-offset-4 hover:underline"
-              >
-                GitHub repo
-              </Link>
-              .
-            </p>
-          </CardContent>
-        </Card>
-      )}
     </article>
   );
 }

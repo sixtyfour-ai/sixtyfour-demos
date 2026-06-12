@@ -100,9 +100,9 @@ export const DEMOS: Demo[] = [
       {
         name: "domain",
         label: "Company domain",
-        placeholder: "sixtyfour.com",
+        placeholder: "sixtyfour.ai",
         type: "text",
-        defaultValue: "sixtyfour.com",
+        defaultValue: "sixtyfour.ai",
         description: "Website domain — no protocol or path.",
       },
       {
@@ -177,11 +177,32 @@ export const DEMOS: Demo[] = [
     oneLiner:
       "Generate a due-diligence packet on any company: ownership, sanctions exposure, shell-company signals.",
     category: "compliance",
-    status: "coming-soon",
+    status: "live",
     mode: "direct",
-    tags: ["enrich_company", "transform", "risk"],
-    inputs: [],
-    inputSchema: z.object({}),
+    tags: ["company-intelligence", "compliance", "risk", "api"],
+    inputs: [
+      {
+        name: "domain",
+        label: "Company domain",
+        placeholder: "sixtyfour.ai",
+        type: "text",
+        defaultValue: "sixtyfour.ai",
+        description: "Website domain — no protocol or path.",
+      },
+    ],
+    inputSchema: z.object({
+      domain: z
+        .string()
+        .min(1, "domain is required")
+        .max(200, "domain must be < 200 chars")
+        .transform((v) =>
+          v.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").toLowerCase(),
+        ),
+    }),
+    sampleOutputPath: "compliance/kyb-report/sample-output.json",
+    standalonePath: "demos/compliance/kyb-report",
+    outputBrief:
+      "A structured KYB packet covering beneficial ownership, sanctions and watchlist exposure, shell-company indicators, adverse media signals, and an overall risk verdict with sourced reasoning.",
   },
   {
     slug: "threat-actor-footprint",

@@ -6,6 +6,7 @@ import {
   getSixtyfourClient,
   buildIcpStruct,
   buildTalentStruct,
+  buildKybStruct,
 } from "../../../../../lib/sixtyfour-server";
 
 export const runtime = "nodejs";
@@ -150,6 +151,26 @@ export async function POST(
           );
           console.log("[run/sse] enrichment complete", { slug, endpoint: "people-intelligence" });
           result = (piResult.structured_data ?? piResult) as Record<string, unknown>;
+        } else if (slug === "kyb-report") {
+          const input = parsed.data as { domain: string };
+          controller.enqueue(
+            sseEvent("status", {
+              status: "running",
+              message: `Running KYB check on ${input.domain}…`,
+              progress: 15,
+            }),
+          );
+          console.log("[run/sse] calling /company-intelligence", { slug });
+          const kybResult = await client.companyIntelligence(
+            {
+              target_company: { website: input.domain },
+              struct: buildKybStruct(),
+              tier: "low" as const,
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
+          result = (kybResult.structured_data ?? kybResult) as Record<string, unknown>;
         } else {
           const input = parsed.data as { domain: string; icp_description: string };
           controller.enqueue(
