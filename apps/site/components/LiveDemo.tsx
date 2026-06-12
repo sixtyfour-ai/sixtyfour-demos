@@ -44,6 +44,7 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
   const [elapsed, setElapsed] = React.useState(0);
   const [debugOpen, setDebugOpen] = React.useState(false);
   const cancelledRef = React.useRef(false);
+  const hasEverSubmittedRef = React.useRef(false);
   const { apiKey } = useApiKey();
   const [keyModalOpen, setKeyModalOpen] = React.useState(false);
   // Highlighted JSON for the result panel — starts with the server-pre-highlighted sample,
@@ -133,6 +134,7 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
     });
     setElapsed(0);
     cancelledRef.current = false;
+    hasEverSubmittedRef.current = true;
     try {
       await runDirect(demo.slug, form, apiKey, setRun, cancelledRef);
     } catch (err) {
@@ -146,7 +148,7 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
   };
 
   const isRunning = run.status === "starting" || run.status === "running";
-  const isUsingSample = run.result === initialResult && run.status === "idle";
+  const isUsingSample = !hasEverSubmittedRef.current && run.result === initialResult && run.status === "idle";
 
   return (
     <>

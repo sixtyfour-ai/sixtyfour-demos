@@ -70,6 +70,12 @@ export interface Demo {
   standalonePath?: string;
   /** Markdown-style brief explaining what gets returned. Used on the demo page. */
   outputBrief?: string;
+  /** Optional promotional CTA shown below the live demo panel. */
+  ctaNote?: {
+    text: string;
+    linkLabel: string;
+    linkHref: string;
+  };
 }
 
 const icpInputSchema = z.object({
@@ -210,11 +216,55 @@ export const DEMOS: Demo[] = [
     oneLiner:
       "Map a person's online footprint across platforms, forums, and leaked credential databases.",
     category: "security",
-    status: "coming-soon",
+    status: "live",
     mode: "direct",
-    tags: ["search", "enrich_person", "OSINT"],
-    inputs: [],
-    inputSchema: z.object({}),
+    tags: ["people-intelligence", "OSINT", "security", "api"],
+    inputs: [
+      {
+        name: "full_name",
+        label: "Full name",
+        placeholder: "Saarth Shah",
+        type: "text",
+        defaultValue: "Saarth Shah",
+        description: "First and last name of the subject.",
+      },
+      {
+        name: "email",
+        label: "Known email (optional)",
+        placeholder: "saarth@sixtyfour.ai",
+        type: "email",
+        description: "Known email address significantly improves match accuracy.",
+      },
+      {
+        name: "linkedin_url",
+        label: "LinkedIn URL (optional)",
+        placeholder: "https://linkedin.com/in/saarthshah",
+        type: "url",
+        description: "Confirmed profile URL anchors identity resolution.",
+      },
+    ],
+    inputSchema: z.object({
+      full_name: z.string().min(2, "full_name is required").max(200),
+      email: z
+        .string()
+        .max(500)
+        .optional()
+        .transform((v) => (v && v.trim().length > 0 ? v.trim() : undefined)),
+      linkedin_url: z
+        .string()
+        .max(500)
+        .optional()
+        .transform((v) => (v && v.trim().length > 0 ? v.trim() : undefined)),
+    }),
+    sampleOutputPath: "security/threat-actor-footprint/sample-output.json",
+    standalonePath: "demos/security/threat-actor-footprint",
+    outputBrief:
+      "A structured OSINT footprint covering confirmed identities and aliases, social platform presence, dark web and credential leak exposure, threat actor signals, and an overall risk verdict with sourced reasoning.",
+    ctaNote: {
+      text: "This demo runs on Low tier for speed and reliability. Medium tier adds extended enrichment, and High tier delivers the deepest OSINT coverage — full credential leak scanning, dark web forum indexing, and exhaustive alias resolution. High tier is available to Enterprise customers only.",
+      linkLabel: "Learn about High Tier →",
+      linkHref: "https://docs.sixtyfour.ai/guides/credits-and-pricing#intelligence-pricing",
+    },
   },
   {
     slug: "founder-background-check",
