@@ -15,7 +15,8 @@
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mjs,cjs,css}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mjs,cjs,css}\" --ignore-path .gitignore",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "test:async-polling": "tsx scripts/test-async-polling.ts"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

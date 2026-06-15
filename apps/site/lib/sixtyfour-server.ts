@@ -32,6 +32,7 @@ export function getSixtyfourClient(apiKey?: string): SixtyfourClient {
 
 // Re-export struct builders from the shared api-client package.
 export {
+  buildFounderStruct,
   buildIcpStruct,
   buildKybStruct,
   buildTalentStruct,

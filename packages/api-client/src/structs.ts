@@ -108,6 +108,49 @@ export function buildKybStruct(): Record<string, string> {
 }
 
 /**
+ * Build the people-intelligence `struct` for founder background checks.
+ */
+export function buildFounderStruct(): Record<string, string> {
+  return {
+    full_name: "Confirmed full legal name",
+    current_role:
+      "Current title and company (e.g. 'CEO at Acme Inc.'). 'Unknown' if not determinable.",
+    prior_companies_founded:
+      "Companies this person founded or co-founded. Format one per line: 'Company (Year–Year or Year–present, Outcome: active/acquired/shutdown/failed)'. 'None found' if none.",
+    prior_executive_roles:
+      "Senior leadership positions (VP, C-suite, President, GM) held outside of founding roles. Format one per line: 'Title at Company (Year–Year)'. 'None found' if none.",
+    total_capital_raised:
+      "Aggregate capital raised across all this person's ventures (best estimate with source). 'Unknown' if not determinable.",
+    funding_history:
+      "Individual funding rounds raised across ventures. Format one per line: 'Company — Stage $Amount (Year, Lead Investor or Undisclosed)'. 'None found' if none.",
+    key_investors:
+      "Notable investors or funds who have backed this person's ventures, comma-separated. 'None found' if not identifiable.",
+    exit_history:
+      "Acquisitions, IPOs, shutdowns, or other exits of the founder's ventures. Format one per line: 'Company — Outcome (Year, Acquirer or Exchange if applicable)'. 'None found' if absent.",
+    board_and_advisor_roles:
+      "Board seats or formal advisor roles at other companies. Format: 'Role at Company'. 'None found' if absent.",
+    education:
+      "Highest degree and institution. 'Unknown' if not publicly findable.",
+    linkedin_url:
+      "Confirmed LinkedIn profile URL. 'Not found' if absent.",
+    media_and_press:
+      "Notable press coverage, profiles, or interviews (name publication + year). 'None found' if absent.",
+    reputation_signals:
+      "Public talks, podcast appearances, published writing, awards, or notable endorsements. 'None found' if absent.",
+    controversies_or_red_flags:
+      "Public controversies, notably failed ventures with disputed circumstances, public disputes, or negative press. Describe briefly with source/year. 'None found' if absent.",
+    legal_or_regulatory_issues:
+      "Court records, SEC filings, regulatory investigations, enforcement actions, or civil judgments. 'None found' if absent.",
+    background_verdict:
+      "One of: clean | notable_concerns | significant_red_flags",
+    background_summary:
+      "3–5 sentences summarising the key findings and the basis for the verdict.",
+    data_sources_note:
+      "Primary sources used (LinkedIn, Crunchbase, Pitchbook, press archives, public records, SEC EDGAR, etc.) and any notable data gaps.",
+  };
+}
+
+/**
  * Build the company-intelligence `struct` for ICP scoring.
  */
 export function buildIcpStruct(icpDescription: string): Record<string, string> {
