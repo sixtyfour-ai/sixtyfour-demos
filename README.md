@@ -19,7 +19,7 @@ Every demo is a working end-to-end Sixtyfour API integration you can run in unde
 | Compliance / KYB | [KYB Report](demos/compliance/kyb-report) — ownership, sanctions exposure, and risk verdict | Live |
 | Security | [Threat Actor Footprint](demos/security/threat-actor-footprint) — OSINT footprint across platforms and data breaches | Live |
 | Entity / Financial Intel | [Founder Background Check](demos/entity-intel/founder-background-check) — prior ventures, investors, and red flags | Live |
-| Entity / Financial Intel | Competitive Org Intel | Coming soon |
+| Entity / Financial Intel | [Competitive Org Intel](demos/entity-intel/competitive-org-intel) — headcount trend, leadership changes, and key hires | Live |
 
 ## Quick start
 
@@ -57,7 +57,8 @@ sixtyfour-demos/
 │   ├── talent/passive-candidate-finder/
 │   ├── compliance/kyb-report/
 │   ├── security/threat-actor-footprint/
-│   └── entity-intel/founder-background-check/
+│   ├── entity-intel/founder-background-check/
+│   └── entity-intel/competitive-org-intel/
 ├── packages/
 │   ├── api-client/              # Thin fetch wrapper around api.sixtyfour.ai
 │   ├── ui/                      # Shared shadcn-style React primitives

@@ -108,6 +108,48 @@ export function buildKybStruct(): Record<string, string> {
 }
 
 /**
+ * Build the company-intelligence `struct` for competitive org mapping.
+ */
+export function buildCompetitiveOrgStruct(): Record<string, string> {
+  return {
+    company_name: "Official company name",
+    domain: "Primary website domain",
+    headquarters: "City, state/region, country of headquarters",
+    employee_count_current:
+      "Most recent estimated total headcount (integer). Note the data source and approximate date.",
+    employee_count_6mo_ago:
+      "Estimated headcount ~6 months ago (integer). 'Unknown' if not determinable.",
+    employee_count_12mo_ago:
+      "Estimated headcount ~12 months ago (integer). 'Unknown' if not determinable.",
+    headcount_trend:
+      "One of: growing | shrinking | flat | unknown — based on the trajectory above.",
+    headcount_trend_pct:
+      "Percentage change in headcount over the last 12 months (e.g. '+12%', '-8%'). 'Unknown' if not determinable.",
+    ceo: "Current CEO — full name and LinkedIn URL if available. 'Unknown' if not found.",
+    cto: "Current CTO or Head of Engineering — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    cpo: "Current CPO or Head of Product — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    cmo: "Current CMO or Head of Marketing — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    vp_sales: "Current VP Sales or Head of Sales — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    leadership_changes_90d:
+      "C-suite or VP-level departures or appointments in the last ~90 days. Format: 'Name — joined/left as Title (approx date)'. 'None found' if none.",
+    key_hires_90d:
+      "Notable individual contributor or manager hires signalling strategic bets (e.g. new AI lead, new enterprise sales team). Format: 'Name — Title (approx date)'. 'None found' if none.",
+    layoffs_or_reductions:
+      "Any publicly reported layoffs, RIFs, or significant headcount reductions in the last 12 months. Cite approximate date and % if known. 'None found' if absent.",
+    open_roles_signals:
+      "High-signal open job postings that reveal strategic direction (e.g. 'Head of Enterprise', 'ML Platform Engineer'). List up to 5 examples. 'None found' if none.",
+    recent_funding:
+      "Most recent funding round: stage, amount, lead investor, date. 'None in last 12 months' if not applicable.",
+    product_launches_90d:
+      "Notable product launches, major feature releases, or platform announcements in the last ~90 days. 'None found' if none.",
+    competitive_signals:
+      "Any signals of direct competitive moves: new market entry, pricing changes, partnerships, or explicit competitor messaging. 'None found' if absent.",
+    data_sources_note:
+      "Primary sources used (LinkedIn, Glassdoor, Crunchbase, press, job boards, company blog, etc.) and any notable data gaps.",
+  };
+}
+
+/**
  * Build the people-intelligence `struct` for founder background checks.
  */
 export function buildFounderStruct(): Record<string, string> {

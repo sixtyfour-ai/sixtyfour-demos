@@ -122,6 +122,28 @@ importers:
         specifier: ^5.5.3
         version: 5.9.3
 
+  demos/entity-intel/competitive-org-intel:
+    dependencies:
+      '@sixtyfour-demos/api-client':
+        specifier: workspace:*
+        version: link:../../../packages/api-client
+      '@sixtyfour-demos/utils':
+        specifier: workspace:*
+        version: link:../../../packages/utils
+    devDependencies:
+      '@types/node':
+        specifier: ^20.14.10
+        version: 20.19.41
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.1
+      tsx:
+        specifier: ^4.16.2
+        version: 4.22.4
+      typescript:
+        specifier: ^5.5.3
+        version: 5.9.3
+
   demos/entity-intel/founder-background-check:
     dependencies:
       '@sixtyfour-demos/api-client':

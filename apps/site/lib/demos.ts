@@ -328,11 +328,32 @@ export const DEMOS: Demo[] = [
     oneLiner:
       "Track headcount trend, leadership changes, and key hires at any competitor — refreshable on demand.",
     category: "entity-intel",
-    status: "coming-soon",
+    status: "live",
     mode: "direct",
-    tags: ["enrich_company", "transform"],
-    inputs: [],
-    inputSchema: z.object({}),
+    tags: ["company-intelligence", "competitive", "sync", "api"],
+    inputs: [
+      {
+        name: "domain",
+        label: "Competitor domain",
+        placeholder: "sixtyfour.ai",
+        type: "text",
+        defaultValue: "sixtyfour.ai",
+        description: "Website domain of the company to monitor — no protocol or path.",
+      },
+    ],
+    inputSchema: z.object({
+      domain: z
+        .string()
+        .min(1, "domain is required")
+        .max(200, "domain must be < 200 chars")
+        .transform((v) =>
+          v.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").toLowerCase(),
+        ),
+    }),
+    sampleOutputPath: "entity-intel/competitive-org-intel/sample-output.json",
+    standalonePath: "demos/entity-intel/competitive-org-intel",
+    outputBrief:
+      "A structured competitive snapshot covering current headcount and 6/12-month trend, C-suite and VP roster, recent leadership changes and key hires, open role signals, layoffs, product launches, recent funding, and direct competitive moves — all in one API call.",
   },
 ];
 

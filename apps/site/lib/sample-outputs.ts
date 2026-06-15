@@ -15,6 +15,7 @@ import talentSample from "../../../demos/talent/passive-candidate-finder/sample-
 import kybSample from "../../../demos/compliance/kyb-report/sample-output.json";
 import threatSample from "../../../demos/security/threat-actor-footprint/sample-output.json";
 import founderSample from "../../../demos/entity-intel/founder-background-check/sample-output.json";
+import coiSample from "../../../demos/entity-intel/competitive-org-intel/sample-output.json";
 
 export const SAMPLE_OUTPUTS: Record<string, unknown> = {
   "icp-qualifier": icpSample,
@@ -22,6 +23,7 @@ export const SAMPLE_OUTPUTS: Record<string, unknown> = {
   "kyb-report": kybSample,
   "threat-actor-footprint": threatSample,
   "founder-background-check": founderSample,
+  "competitive-org-intel": coiSample,
 };
 
 export function getSampleOutput(slug: string): unknown {

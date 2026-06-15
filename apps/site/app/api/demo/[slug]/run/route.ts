@@ -4,6 +4,7 @@ import { getDemoBySlug } from "../../../../../lib/demos";
 import {
   ServerConfigError,
   getSixtyfourClient,
+  buildCompetitiveOrgStruct,
   buildFounderStruct,
   buildIcpStruct,
   buildTalentStruct,
@@ -219,6 +220,26 @@ export async function POST(
           );
           console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
           result = (kybResult.structured_data ?? kybResult) as Record<string, unknown>;
+        } else if (slug === "competitive-org-intel") {
+          const input = parsed.data as { domain: string };
+          controller.enqueue(
+            sseEvent("status", {
+              status: "running",
+              message: `Mapping org snapshot for ${input.domain}…`,
+              progress: 15,
+            }),
+          );
+          console.log("[run/sse] calling /company-intelligence", { slug });
+          const coiResult = await client.companyIntelligence(
+            {
+              target_company: { website: input.domain },
+              struct: buildCompetitiveOrgStruct(),
+              tier: "low",
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
+          result = (coiResult.structured_data ?? coiResult) as Record<string, unknown>;
         } else if (slug === "founder-background-check") {
           const input = parsed.data as {
             full_name: string;
