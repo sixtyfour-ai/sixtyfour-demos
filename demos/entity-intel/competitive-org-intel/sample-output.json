@@ -1,0 +1,23 @@
+{
+  "company_name": "Sixtyfour AI",
+  "domain": "sixtyfour.ai",
+  "headquarters": "San Francisco, CA, United States",
+  "employee_count_current": "15",
+  "employee_count_6mo_ago": "10",
+  "employee_count_12mo_ago": "6",
+  "headcount_trend": "growing",
+  "headcount_trend_pct": "+150%",
+  "ceo": "Saarth Shah — https://linkedin.com/in/saarthshah",
+  "cto": "None publicly listed as a distinct CTO role.",
+  "cpo": "None publicly listed.",
+  "cmo": "None publicly listed.",
+  "vp_sales": "None publicly listed.",
+  "leadership_changes_90d": "None found.",
+  "key_hires_90d": "Multiple engineering and GTM hires visible on LinkedIn (Apr–Jun 2026). New developer relations role added.",
+  "layoffs_or_reductions": "None found.",
+  "open_roles_signals": "Senior Backend Engineer (enrichment infra); Developer Relations Engineer; GTM / Sales Engineer; Senior ML Engineer.",
+  "recent_funding": "Seed — $4.1M (2024, investors not publicly disclosed).",
+  "product_launches_90d": "Waterfall API launch (May 2026) — in-house multi-provider enrichment replacing Fullenrich dependency. New API docs site (docs.sixtyfour.ai) launched April 2026. Open-source demos site (demos.sixtyfour.ai) shipped June 2026.",
+  "competitive_signals": "Waterfall API directly competes with Clay, Apollo, and Clearbit in the enrichment infrastructure layer. Positioning as the developer-first alternative with BYOK and transparent API design. Active expansion of API surface area.",
+  "data_sources_note": "LinkedIn, Crunchbase, sixtyfour.ai, docs.sixtyfour.ai, ProductHunt, company announcements. Limited public financials for early-stage private company."
+}

@@ -108,6 +108,91 @@ export function buildKybStruct(): Record<string, string> {
 }
 
 /**
+ * Build the company-intelligence `struct` for competitive org mapping.
+ */
+export function buildCompetitiveOrgStruct(): Record<string, string> {
+  return {
+    company_name: "Official company name",
+    domain: "Primary website domain",
+    headquarters: "City, state/region, country of headquarters",
+    employee_count_current:
+      "Most recent estimated total headcount (integer). Note the data source and approximate date.",
+    employee_count_6mo_ago:
+      "Estimated headcount ~6 months ago (integer). 'Unknown' if not determinable.",
+    employee_count_12mo_ago:
+      "Estimated headcount ~12 months ago (integer). 'Unknown' if not determinable.",
+    headcount_trend:
+      "One of: growing | shrinking | flat | unknown — based on the trajectory above.",
+    headcount_trend_pct:
+      "Percentage change in headcount over the last 12 months (e.g. '+12%', '-8%'). 'Unknown' if not determinable.",
+    ceo: "Current CEO — full name and LinkedIn URL if available. 'Unknown' if not found.",
+    cto: "Current CTO or Head of Engineering — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    cpo: "Current CPO or Head of Product — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    cmo: "Current CMO or Head of Marketing — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    vp_sales: "Current VP Sales or Head of Sales — full name and LinkedIn URL if available. 'None' if no such role exists or not found.",
+    leadership_changes_90d:
+      "C-suite or VP-level departures or appointments in the last ~90 days. Format: 'Name — joined/left as Title (approx date)'. 'None found' if none.",
+    key_hires_90d:
+      "Notable individual contributor or manager hires signalling strategic bets (e.g. new AI lead, new enterprise sales team). Format: 'Name — Title (approx date)'. 'None found' if none.",
+    layoffs_or_reductions:
+      "Any publicly reported layoffs, RIFs, or significant headcount reductions in the last 12 months. Cite approximate date and % if known. 'None found' if absent.",
+    open_roles_signals:
+      "High-signal open job postings that reveal strategic direction (e.g. 'Head of Enterprise', 'ML Platform Engineer'). List up to 5 examples. 'None found' if none.",
+    recent_funding:
+      "Most recent funding round: stage, amount, lead investor, date. 'None in last 12 months' if not applicable.",
+    product_launches_90d:
+      "Notable product launches, major feature releases, or platform announcements in the last ~90 days. 'None found' if none.",
+    competitive_signals:
+      "Any signals of direct competitive moves: new market entry, pricing changes, partnerships, or explicit competitor messaging. 'None found' if absent.",
+    data_sources_note:
+      "Primary sources used (LinkedIn, Glassdoor, Crunchbase, press, job boards, company blog, etc.) and any notable data gaps.",
+  };
+}
+
+/**
+ * Build the people-intelligence `struct` for founder background checks.
+ */
+export function buildFounderStruct(): Record<string, string> {
+  return {
+    full_name: "Confirmed full legal name",
+    current_role:
+      "Current title and company (e.g. 'CEO at Acme Inc.'). 'Unknown' if not determinable.",
+    prior_companies_founded:
+      "Companies this person founded or co-founded. Format one per line: 'Company (Year–Year or Year–present, Outcome: active/acquired/shutdown/failed)'. 'None found' if none.",
+    prior_executive_roles:
+      "Senior leadership positions (VP, C-suite, President, GM) held outside of founding roles. Format one per line: 'Title at Company (Year–Year)'. 'None found' if none.",
+    total_capital_raised:
+      "Aggregate capital raised across all this person's ventures (best estimate with source). 'Unknown' if not determinable.",
+    funding_history:
+      "Individual funding rounds raised across ventures. Format one per line: 'Company — Stage $Amount (Year, Lead Investor or Undisclosed)'. 'None found' if none.",
+    key_investors:
+      "Notable investors or funds who have backed this person's ventures, comma-separated. 'None found' if not identifiable.",
+    exit_history:
+      "Acquisitions, IPOs, shutdowns, or other exits of the founder's ventures. Format one per line: 'Company — Outcome (Year, Acquirer or Exchange if applicable)'. 'None found' if absent.",
+    board_and_advisor_roles:
+      "Board seats or formal advisor roles at other companies. Format: 'Role at Company'. 'None found' if absent.",
+    education:
+      "Highest degree and institution. 'Unknown' if not publicly findable.",
+    linkedin_url:
+      "Confirmed LinkedIn profile URL. 'Not found' if absent.",
+    media_and_press:
+      "Notable press coverage, profiles, or interviews (name publication + year). 'None found' if absent.",
+    reputation_signals:
+      "Public talks, podcast appearances, published writing, awards, or notable endorsements. 'None found' if absent.",
+    controversies_or_red_flags:
+      "Public controversies, notably failed ventures with disputed circumstances, public disputes, or negative press. Describe briefly with source/year. 'None found' if absent.",
+    legal_or_regulatory_issues:
+      "Court records, SEC filings, regulatory investigations, enforcement actions, or civil judgments. 'None found' if absent.",
+    background_verdict:
+      "One of: clean | notable_concerns | significant_red_flags",
+    background_summary:
+      "3–5 sentences summarising the key findings and the basis for the verdict.",
+    data_sources_note:
+      "Primary sources used (LinkedIn, Crunchbase, Pitchbook, press archives, public records, SEC EDGAR, etc.) and any notable data gaps.",
+  };
+}
+
+/**
  * Build the company-intelligence `struct` for ICP scoring.
  */
 export function buildIcpStruct(icpDescription: string): Record<string, string> {

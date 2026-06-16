@@ -2,6 +2,8 @@ export { SixtyfourClient } from "./client";
 export type { SixtyfourClientOptions } from "./client";
 export { SixtyfourApiError } from "./errors";
 export {
+  buildCompetitiveOrgStruct,
+  buildFounderStruct,
   buildIcpStruct,
   buildKybStruct,
   buildTalentStruct,

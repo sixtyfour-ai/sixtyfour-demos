@@ -4,7 +4,7 @@
   "private": true,
   "description": "Demo hub at demos.sixtyfour.ai — landing page + per-demo live UI.",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",

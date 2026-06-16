@@ -274,11 +274,53 @@ export const DEMOS: Demo[] = [
     oneLiner:
       "Investigate a founder: prior companies, investor relationships, red flags — sourced and structured.",
     category: "entity-intel",
-    status: "coming-soon",
+    status: "live",
     mode: "direct",
-    tags: ["enrich_person", "enrich_company", "due-diligence"],
-    inputs: [],
-    inputSchema: z.object({}),
+    tags: ["people-intelligence", "due-diligence", "sync", "api"],
+    inputs: [
+      {
+        name: "full_name",
+        label: "Founder full name",
+        placeholder: "Saarth Shah",
+        type: "text",
+        defaultValue: "Saarth Shah",
+        description: "First and last name of the founder to investigate.",
+      },
+      {
+        name: "company",
+        label: "Current company",
+        placeholder: "Sixtyfour",
+        type: "text",
+        defaultValue: "Sixtyfour",
+        description: "Their current or most recent company — disambiguates common names.",
+      },
+      {
+        name: "linkedin_url",
+        label: "LinkedIn URL (optional)",
+        placeholder: "https://linkedin.com/in/saarthshah",
+        type: "url",
+        description: "Confirmed profile URL anchors identity and significantly improves coverage.",
+      },
+    ],
+    inputSchema: z.object({
+      full_name: z.string().min(2, "full_name is required").max(200),
+      company: z.string().min(1, "company is required").max(200),
+      linkedin_url: z
+        .string()
+        .max(500)
+        .transform((v) => v.trim())
+        .pipe(z.union([z.literal(""), z.string().url("must be a valid URL")]))
+        .transform((v) => (v.length > 0 ? v : undefined)),
+    }),
+    sampleOutputPath: "entity-intel/founder-background-check/sample-output.json",
+    standalonePath: "demos/entity-intel/founder-background-check",
+    outputBrief:
+      "A structured due-diligence profile covering prior ventures (with outcomes), funding and exit history, key investors, board roles, reputation signals, controversies or red flags, legal or regulatory issues, and an overall background verdict with sourced reasoning.",
+    ctaNote: {
+      text: "This demo runs on Low tier for speed. Medium and High tiers add deeper research coverage — extended press archives, fuller public records, and harder-to-find private company data. High tier is available to Enterprise customers only.",
+      linkLabel: "Learn about tiers →",
+      linkHref: "https://docs.sixtyfour.ai/guides/credits-and-pricing#intelligence-pricing",
+    },
   },
   {
     slug: "competitive-org-intel",
@@ -286,11 +328,32 @@ export const DEMOS: Demo[] = [
     oneLiner:
       "Track headcount trend, leadership changes, and key hires at any competitor — refreshable on demand.",
     category: "entity-intel",
-    status: "coming-soon",
+    status: "live",
     mode: "direct",
-    tags: ["enrich_company", "transform"],
-    inputs: [],
-    inputSchema: z.object({}),
+    tags: ["company-intelligence", "competitive", "sync", "api"],
+    inputs: [
+      {
+        name: "domain",
+        label: "Competitor domain",
+        placeholder: "sixtyfour.ai",
+        type: "text",
+        defaultValue: "sixtyfour.ai",
+        description: "Website domain of the company to monitor — no protocol or path.",
+      },
+    ],
+    inputSchema: z.object({
+      domain: z
+        .string()
+        .min(1, "domain is required")
+        .max(200, "domain must be < 200 chars")
+        .transform((v) =>
+          v.replace(/^https?:\/\//i, "").replace(/\/.*$/, "").toLowerCase(),
+        ),
+    }),
+    sampleOutputPath: "entity-intel/competitive-org-intel/sample-output.json",
+    standalonePath: "demos/entity-intel/competitive-org-intel",
+    outputBrief:
+      "A structured competitive snapshot covering current headcount and 6/12-month trend, C-suite and VP roster, recent leadership changes and key hires, open role signals, layoffs, product launches, recent funding, and direct competitive moves — all in one API call.",
   },
 ];
 

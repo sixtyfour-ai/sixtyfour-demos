@@ -4,6 +4,8 @@ import { getDemoBySlug } from "../../../../../lib/demos";
 import {
   ServerConfigError,
   getSixtyfourClient,
+  buildCompetitiveOrgStruct,
+  buildFounderStruct,
   buildIcpStruct,
   buildTalentStruct,
   buildKybStruct,
@@ -12,6 +14,24 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// TODO: migrate all demo slugs to async polling once all demos are shipped.
+//
+// Architecture:
+//   1. POST /company-intelligence-async or /people-intelligence-async → returns { task_id } immediately
+//   2. Return task_id to client (short Vercel response, no timeout risk)
+//   3. Client polls GET /api/demo/[slug]/status?task_id=... every ~5s
+//   4. Each poll is a lightweight Vercel function that calls GET /job-status/{task_id} and proxies the result
+//   5. Client reads result.structured_data when status === "completed"
+//
+// IMPORTANT — status casing is inconsistent, normalize before comparing:
+//   Submit response returns:  { "status": "RUNNING" }   ← uppercase
+//   Poll responses return:    { "status": "running" }   ← lowercase
+//   Terminal states ("completed", "failed", "cancelled") — casing TBD, treat case-insensitively
+//   Safe pattern:  status.toLowerCase() === "completed"
+//
+// Verified working: new jobs poll to "completed" correctly (tested 2026-06-12).
+// The sync endpoint (this file) stays as the fallback for local dev and low-tier fast calls.
 
 /** Safe user-facing message — never forward raw upstream API bodies. */
 function userFacingEnrichmentError(err: unknown): string {
@@ -200,6 +220,54 @@ export async function POST(
           );
           console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
           result = (kybResult.structured_data ?? kybResult) as Record<string, unknown>;
+        } else if (slug === "competitive-org-intel") {
+          const input = parsed.data as { domain: string };
+          controller.enqueue(
+            sseEvent("status", {
+              status: "running",
+              message: `Mapping org snapshot for ${input.domain}…`,
+              progress: 15,
+            }),
+          );
+          console.log("[run/sse] calling /company-intelligence", { slug });
+          const coiResult = await client.companyIntelligence(
+            {
+              target_company: { website: input.domain },
+              struct: buildCompetitiveOrgStruct(),
+              tier: "low",
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "company-intelligence" });
+          result = (coiResult.structured_data ?? coiResult) as Record<string, unknown>;
+        } else if (slug === "founder-background-check") {
+          const input = parsed.data as {
+            full_name: string;
+            company: string;
+            linkedin_url?: string;
+          };
+          controller.enqueue(
+            sseEvent("status", {
+              status: "running",
+              message: `Researching ${input.full_name} at ${input.company}…`,
+              progress: 15,
+            }),
+          );
+          console.log("[run/sse] calling /people-intelligence", { slug });
+          const founderResult = await client.peopleIntelligence(
+            {
+              lead_info: {
+                full_name: input.full_name,
+                company: input.company,
+                ...(input.linkedin_url ? { linkedin_url: input.linkedin_url } : {}),
+              },
+              struct: buildFounderStruct(),
+              tier: "low",
+            },
+            { signal },
+          );
+          console.log("[run/sse] enrichment complete", { slug, endpoint: "people-intelligence" });
+          result = (founderResult.structured_data ?? founderResult) as Record<string, unknown>;
         } else {
           const input = parsed.data as { domain: string; icp_description: string };
           controller.enqueue(
