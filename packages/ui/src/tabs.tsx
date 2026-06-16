@@ -84,7 +84,7 @@ export function TabsTrigger({
       className={cn(
         "inline-flex h-8 items-center rounded-md px-3 text-xs font-medium transition-colors",
         active
-          ? "bg-blue-600 text-white"
+          ? "bg-white text-black"
           : "text-zinc-400 hover:text-zinc-100",
         className,
       )}

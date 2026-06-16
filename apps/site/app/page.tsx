@@ -15,8 +15,7 @@ export default function HomePage() {
               Open-source · MIT
             </p>
             <h1 className="text-4xl font-semibold tracking-tight text-zinc-50 sm:text-6xl">
-              Build with{" "}
-              <span className="text-blue-400">Sixtyfour</span>
+              Build with Sixtyfour
             </h1>
             <p className="mt-5 max-w-2xl text-lg text-zinc-400">
             Working examples for Sixtyfour APIs. Start here, build anything.
