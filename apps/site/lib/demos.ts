@@ -365,14 +365,3 @@ export const DEMOS: Demo[] = [
 export function getDemoBySlug(slug: string): Demo | undefined {
   return DEMOS.find((d) => d.slug === slug);
 }
-
-export function getDemosByCategory(categoryId: CategoryId): Demo[] {
-  return DEMOS.filter((d) => d.category === categoryId);
-}
-
-export function getRelatedDemos(demo: Demo, limit = 2): Demo[] {
-  return DEMOS.filter((d) => d.category === demo.category && d.slug !== demo.slug).slice(
-    0,
-    limit,
-  );
-}
