@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Button } from "@sixtyfour-demos/ui";
 import { buildCopyForLlmPrompt } from "@sixtyfour-demos/utils";
-import { CATEGORIES, DEMOS, getDemoBySlug, getRelatedDemos } from "../../../lib/demos";
+import { CATEGORIES, DEMOS, getDemoBySlug } from "../../../lib/demos";
 import { getSampleOutput } from "../../../lib/sample-outputs";
 import { getSnippetsForSlug } from "../../../lib/snippets";
 import { highlightSnippets, highlightJson, highlightBash } from "../../../lib/highlight";
@@ -10,7 +10,6 @@ import { LiveDemo } from "../../../components/LiveDemo";
 import { CodeTabs } from "../../../components/CodeTabs";
 import { CopyForLLMButton } from "../../../components/CopyForLLMButton";
 import { CopyableCodeBlock } from "../../../components/CopyableCodeBlock";
-import { DemoCard } from "../../../components/DemoCard";
 
 export function generateStaticParams() {
   return DEMOS.filter((d) => d.status === "live").map((d) => ({ slug: d.slug }));
@@ -34,7 +33,6 @@ export default async function DemoPage({ params }: { params: { slug: string } })
   const category = CATEGORIES.find((c) => c.id === demo.category);
   const sample = getSampleOutput(demo.slug);
   const snippets = getSnippetsForSlug(demo.slug);
-  const related = getRelatedDemos(demo, 2);
   const { inputSchema: _inputSchema, ...demoData } = demo;
   const githubUrl = `https://github.com/sixtyfour-ai/sixtyfour-demos/tree/main/${demo.standalonePath ?? ""}`;
   const llmPrompt = snippets
@@ -62,18 +60,15 @@ export default async function DemoPage({ params }: { params: { slug: string } })
     <article className="mx-auto max-w-6xl px-6 py-12">
       {/* Hero */}
       <header className="border-b border-zinc-900/80 pb-10">
-        <div className="flex items-center gap-2 text-xs">
-          <Link
-            href="/"
-            className="text-zinc-500 hover:text-zinc-300"
-          >
+        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-zinc-500">
+          <Link href="/" className="hover:text-zinc-300">
             Demos
           </Link>
-          <span className="text-zinc-700">/</span>
           {category && (
-            <span className="font-mono uppercase tracking-widest text-blue-400">
-              {category.name}
-            </span>
+            <>
+              <span className="text-zinc-700">/</span>
+              <span>{category.label}</span>
+            </>
           )}
         </div>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-zinc-50 sm:text-5xl">
@@ -178,19 +173,7 @@ export default async function DemoPage({ params }: { params: { slug: string } })
         </ol>
       </section>
 
-      {/* Related */}
-      {related.length > 0 && (
-        <section className="border-t border-zinc-900/60 py-10">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            Related demos
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {related.map((d) => (
-              <DemoCard key={d.slug} demo={d} />
-            ))}
-          </div>
-        </section>
-      )}
+
     </article>
   );
 }
