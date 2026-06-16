@@ -14,26 +14,31 @@ export const CATEGORIES = [
   {
     id: "sales-gtm",
     name: "Sales / GTM",
+    label: "Sales · GTM",
     description: "Score accounts, qualify leads, and prep your reps in seconds.",
   },
   {
     id: "talent",
     name: "Talent / Recruiting",
+    label: "Talent · Recruiting",
     description: "Source passive candidates that match a JD with structured data.",
   },
   {
     id: "compliance",
     name: "Compliance / KYB",
+    label: "Compliance · KYB",
     description: "Generate due-diligence packets with sourced risk signals.",
   },
   {
     id: "security",
     name: "Security",
+    label: "Security",
     description: "Map a person's online footprint across platforms and aliases.",
   },
   {
     id: "entity-intel",
     name: "Entity / Financial Intel",
+    label: "Entity · Financial Intel",
     description: "Investigate companies, founders, and competitive landscape.",
   },
 ] as const;
@@ -359,15 +364,4 @@ export const DEMOS: Demo[] = [
 
 export function getDemoBySlug(slug: string): Demo | undefined {
   return DEMOS.find((d) => d.slug === slug);
-}
-
-export function getDemosByCategory(categoryId: CategoryId): Demo[] {
-  return DEMOS.filter((d) => d.category === categoryId);
-}
-
-export function getRelatedDemos(demo: Demo, limit = 2): Demo[] {
-  return DEMOS.filter((d) => d.category === demo.category && d.slug !== demo.slug).slice(
-    0,
-    limit,
-  );
 }
