@@ -14,7 +14,7 @@
  *
  * Env vars (all optional except SIXTYFOUR_API_KEY):
  *   SIXTYFOUR_API_KEY      — required
- *   TARGET_DOMAIN          — competitor domain to research (default: clay.com)
+ *   TARGET_DOMAIN          — competitor domain to research (default: sixtyfour.ai)
  *   SIXTYFOUR_API_BASE_URL — override API base URL (default: https://api.sixtyfour.ai)
  */
 

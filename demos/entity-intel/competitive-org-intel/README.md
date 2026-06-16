@@ -69,17 +69,27 @@ const result = await fetch("https://api.sixtyfour.ai/company-intelligence", {
   body: JSON.stringify({
     target_company: { website: "sixtyfour.ai" },
     struct: {
+      company_name: "Official company name",
+      domain: "Primary website domain",
+      headquarters: "City, state/region, country of headquarters",
       employee_count_current: "Most recent estimated total headcount (integer).",
+      employee_count_6mo_ago: "Estimated headcount ~6 months ago (integer). 'Unknown' if not determinable.",
       employee_count_12mo_ago: "Estimated headcount ~12 months ago (integer). 'Unknown' if not determinable.",
       headcount_trend: "One of: growing | shrinking | flat | unknown",
       headcount_trend_pct: "YoY headcount change (e.g. '+12%', '-8%'). 'Unknown' if not determinable.",
-      ceo: "Current CEO — full name and LinkedIn URL.",
+      ceo: "Current CEO — full name and LinkedIn URL. 'Unknown' if not found.",
+      cto: "Current CTO or Head of Engineering. 'None' if not found.",
+      cpo: "Current CPO or Head of Product. 'None' if not found.",
+      cmo: "Current CMO or Head of Marketing. 'None' if not found.",
+      vp_sales: "Current VP Sales or Head of Sales. 'None' if not found.",
       leadership_changes_90d: "C-suite or VP-level changes in last 90 days. 'None found' if none.",
       key_hires_90d: "Notable hires signalling strategic bets. 'None found' if none.",
+      layoffs_or_reductions: "Public layoffs or RIFs in last 12 months. 'None found' if absent.",
       open_roles_signals: "High-signal open roles revealing strategy. Up to 5 examples.",
+      recent_funding: "Most recent round — stage, amount, lead investor, date.",
       product_launches_90d: "Notable product launches in last 90 days. 'None found' if none.",
       competitive_signals: "Direct competitive moves. 'None found' if absent.",
-      recent_funding: "Most recent round — stage, amount, lead, date.",
+      data_sources_note: "Primary sources used and any notable data gaps.",
     },
     tier: "low",
   }),
@@ -116,15 +126,7 @@ Build a competitive intelligence monitor using the Sixtyfour API.
 
 POST /company-intelligence with:
 - target_company: { website: "domain.com" }
-- struct: {
-    company_name, domain, headquarters,
-    employee_count_current, employee_count_6mo_ago, employee_count_12mo_ago,
-    headcount_trend, headcount_trend_pct,
-    ceo, cto, cpo, vp_sales,
-    leadership_changes_90d, key_hires_90d, layoffs_or_reductions,
-    open_roles_signals, product_launches_90d, recent_funding,
-    competitive_signals, data_sources_note
-  }
+- struct: (same keys and descriptions as in "The API call, exposed" above — matches buildCompetitiveOrgStruct() in this repo)
 - tier: "low"
 
 The JS implementation is:
