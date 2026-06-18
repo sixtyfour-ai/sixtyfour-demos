@@ -25,6 +25,22 @@ export interface CopyForLlmTemplateInput {
   outputBrief?: string;
 }
 
+/** Per-demo batch flagging — must match fields in each demo's struct. */
+const BATCH_FLAGGING_BY_SLUG: Record<string, string> = {
+  "icp-qualifier":
+    "Flag rows where `icp_verdict` is `weak` or `unfit`, or `icp_fit_score` < 50, in a `flagged` column.",
+  "passive-candidate-finder":
+    "Optionally add a `flagged` column when `open_to_work_signals` is not `none found`.",
+  "kyb-report":
+    "Flag rows where `risk_verdict` is `high` or `critical` in a `flagged` column.",
+  "threat-actor-footprint":
+    "Flag rows where `risk_verdict` is `medium` or above in a `flagged` column.",
+  "founder-background-check":
+    "Flag rows where `background_verdict` is `notable_concerns` or `significant_red_flags` in a `flagged` column.",
+  "competitive-org-intel":
+    "Optionally add a `flagged` column when `headcount_trend` is `shrinking` or `layoffs_or_reductions` is not `None found`.",
+};
+
 /**
  * Build the "Copy agent prompt" payload that the demo page surfaces
  * via the `CopyForLLMButton`. The template is deliberately narrative — when
@@ -105,7 +121,7 @@ export function buildCopyForLlmPrompt(input: CopyForLlmTemplateInput): string {
     "3. Write the results to a new CSV, one row per input, with all `structured_data` fields as columns.",
   );
   lines.push(
-    "4. Flag rows that meet a threshold (e.g. `risk_verdict` is `medium` or above, or `background_verdict` is not `clean`) by adding a `flagged` column.",
+    `4. ${BATCH_FLAGGING_BY_SLUG[input.demoSlug] ?? "Optionally add a `flagged` column using the most actionable fields from this demo's `structured_data`."}`,
   );
   lines.push(
     "5. Log failed rows with their error message and continue — don't let one bad input crash the batch.",

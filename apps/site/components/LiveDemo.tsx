@@ -221,7 +221,7 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult, llmPro
             <Button type="submit" disabled={isRunning} className="w-full">
               {isRunning ? "Running…" : "Run demo"}
             </Button>
-            {llmPrompt && !isRunning && (
+            {llmPrompt && (
               <CopyForLLMButton prompt={llmPrompt} className="w-full" />
             )}
             {isRunning && (
