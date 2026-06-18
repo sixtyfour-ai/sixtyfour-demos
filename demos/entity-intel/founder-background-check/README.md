@@ -113,35 +113,6 @@ The response includes `structured_data` (your fields, filled in), `confidence_sc
 4. **Combine with KYB** — pair this script with `demos/compliance/kyb-report` to get both a founder profile and a company due-diligence packet in two parallel API calls.
 5. **Use `tier: "medium"` for private founders** — founders with limited online presence or non-English press coverage benefit from deeper multi-source research.
 
-## Copy-for-LLM prompt
-
-```
-Build a founder due-diligence tool using the Sixtyfour API.
-
-POST /people-intelligence with:
-- lead_info: { full_name, company, linkedin_url? }
-- struct: {
-    full_name, current_role,
-    prior_companies_founded, prior_executive_roles,
-    total_capital_raised, funding_history, key_investors, exit_history,
-    board_and_advisor_roles, education, linkedin_url,
-    media_and_press, reputation_signals,
-    controversies_or_red_flags, legal_or_regulatory_issues,
-    background_verdict, background_summary, data_sources_note
-  }
-- tier: "low"
-
-The JS implementation is:
-
-PASTE_JAVASCRIPT_SNIPPET_HERE
-
-Extend this to:
-1. Accept a CSV of founder names and companies
-2. Run checks concurrently (rate-limit to 3 at a time)
-3. Write results to a new CSV with all struct fields as columns
-4. Flag any row where background_verdict is "notable_concerns" or "significant_red_flags"
-```
-
 ## License
 
 MIT — same as the rest of the monorepo.

@@ -8,7 +8,6 @@ import { getSnippetsForSlug } from "../../../lib/snippets";
 import { highlightSnippets, highlightJson, highlightBash } from "../../../lib/highlight";
 import { LiveDemo } from "../../../components/LiveDemo";
 import { CodeTabs } from "../../../components/CodeTabs";
-import { CopyForLLMButton } from "../../../components/CopyForLLMButton";
 import { CopyableCodeBlock } from "../../../components/CopyableCodeBlock";
 
 export function generateStaticParams() {
@@ -40,6 +39,8 @@ export default async function DemoPage({ params }: { params: { slug: string } })
         demoTitle: demo.title,
         demoSlug: demo.slug,
         jsSnippet: snippets.javascript,
+        oneLiner: demo.oneLiner,
+        outputBrief: demo.outputBrief,
       })
     : "";
 
@@ -79,7 +80,6 @@ export default async function DemoPage({ params }: { params: { slug: string } })
           <Link href={githubUrl} target="_blank" rel="noreferrer">
             <Button variant="outline">View on GitHub</Button>
           </Link>
-          {snippets && <CopyForLLMButton prompt={llmPrompt} />}
         </div>
         <div className="mt-4 flex flex-wrap gap-1.5">
           {demo.tags.map((tag) => (
@@ -95,7 +95,7 @@ export default async function DemoPage({ params }: { params: { slug: string } })
         <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-500">
           Try it
         </h2>
-        <LiveDemo demo={demoData} initialResult={sample} initialHighlightedResult={initialHighlightedResult} />
+        <LiveDemo demo={demoData} initialResult={sample} initialHighlightedResult={initialHighlightedResult} llmPrompt={llmPrompt} />
         {demo.ctaNote && (
           <div className="mt-4 flex items-start gap-3 rounded-lg border border-blue-900/40 bg-blue-950/30 px-4 py-3 text-sm text-blue-200">
             <span className="mt-0.5 shrink-0 text-blue-400">✦</span>

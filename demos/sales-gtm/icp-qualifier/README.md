@@ -109,18 +109,6 @@ The response includes `structured_data` (your fields, filled in), `confidence_sc
 4. **Build a Slack alert** — pipe results to Slack when `icp_fit_score >= 80`. The structured JSON makes it trivial to template.
 5. **Use `tier: "medium"` for hard targets** — bootstrapped companies, international firms, or niche industries benefit from multi-source deep research.
 
-## Copy this prompt to fork the demo with an LLM
-
-> I want to build an "ICP Qualifier" using the Sixtyfour API. Here is a working JavaScript snippet:
->
-> ```javascript
-> // (paste contents of ./snippets.ts → JAVASCRIPT)
-> ```
->
-> Adapt it to my codebase. Read `SIXTYFOUR_API_KEY` from the environment. Use native `fetch`. Throw on non-2xx with the response body in the error. Then explain how I'd swap the rubric, batch 1000 domains, or add fields.
-
-The same prompt is on the [demo site page](https://demos.sixtyfour.ai/demos/icp-qualifier) behind a "Copy prompt to build this" button.
-
 ## License
 
 MIT — same as the rest of the monorepo.

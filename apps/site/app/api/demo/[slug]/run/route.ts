@@ -14,6 +14,7 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 // TODO: migrate all demo slugs to async polling once all demos are shipped.
 //
