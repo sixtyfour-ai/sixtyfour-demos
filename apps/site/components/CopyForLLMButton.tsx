@@ -5,9 +5,10 @@ import { Button } from "@sixtyfour-demos/ui";
 
 interface CopyForLLMButtonProps {
   prompt: string;
+  className?: string;
 }
 
-export function CopyForLLMButton({ prompt }: CopyForLLMButtonProps) {
+export function CopyForLLMButton({ prompt, className }: CopyForLLMButtonProps) {
   const [copied, setCopied] = React.useState(false);
 
   const onCopy = React.useCallback(async () => {
@@ -21,7 +22,7 @@ export function CopyForLLMButton({ prompt }: CopyForLLMButtonProps) {
   }, [prompt]);
 
   return (
-    <Button variant="secondary" onClick={onCopy} aria-live="polite">
+    <Button type="button" variant="secondary" onClick={onCopy} aria-live="polite" className={className}>
       {copied ? "Copied" : "Copy agent prompt"}
     </Button>
   );

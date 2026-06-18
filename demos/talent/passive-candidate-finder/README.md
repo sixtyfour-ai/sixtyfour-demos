@@ -109,26 +109,6 @@ Once you have `structured_data`, it maps directly to standard ATS fields. Use th
 **Trigger on LinkedIn profile views:**
 Set up a Zapier/Make trigger on "new LinkedIn connection" or "profile saved" → call this API → write to your CRM. Every prospect you look at gets auto-enriched.
 
-## Copy-for-LLM prompt
+## License
 
-```
-Build a passive candidate enrichment tool using the Sixtyfour API.
-
-POST /people-intelligence with:
-- lead_info: { full_name, company, linkedin_url (optional) }
-- struct: { current_title, seniority_level, years_experience, key_skills,
-            tech_stack, career_summary, notable_achievements, education,
-            linkedin_url, email, open_to_work_signals, recruiter_note,
-            last_company_tenure }
-- tier: "low"
-
-The JS implementation is:
-
-PASTE_JAVASCRIPT_SNIPPET_HERE
-
-Extend this to:
-1. Accept a CSV of names/companies
-2. Enrich each person concurrently (rate-limit to 5 at a time)
-3. Write results to a new CSV with all struct fields as columns
-4. Add a "fit score" field to the struct for a specific role requirement I'll describe
-```
+MIT — same as the rest of the monorepo.

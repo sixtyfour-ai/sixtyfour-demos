@@ -111,34 +111,6 @@ The response includes `structured_data` (your fields, filled in), `confidence_sc
 4. **Continuous monitoring** — re-run checks on a schedule. Sanctions lists update daily; a counterparty clean today can appear tomorrow.
 5. **Use `tier: "medium"` for private companies** — unlisted firms, offshore entities, and complex holding structures benefit from multi-source deep research.
 
-## Copy-for-LLM prompt
-
-```
-Build a KYB (Know Your Business) due-diligence tool using the Sixtyfour API.
-
-POST /company-intelligence with:
-- target_company: { website: "domain.com" }
-- struct: {
-    company_name, registration_number, jurisdiction, registered_address,
-    company_type, incorporation_date, operational_status, beneficial_owners,
-    key_executives, parent_company, subsidiaries,
-    sanctions_exposure, pep_exposure, shell_company_signals,
-    adverse_media_summary, litigation_and_regulatory,
-    risk_score, risk_verdict, risk_summary, data_sources_note
-  }
-- tier: "low"
-
-The JS implementation is:
-
-PASTE_JAVASCRIPT_SNIPPET_HERE
-
-Extend this to:
-1. Accept a CSV of company domains
-2. Screen each company concurrently (rate-limit to 5 at a time)
-3. Write results to a new CSV with all struct fields as columns
-4. Flag any row where risk_verdict is "high" or "critical" for manual review
-```
-
 ## License
 
 MIT — same as the rest of the monorepo.

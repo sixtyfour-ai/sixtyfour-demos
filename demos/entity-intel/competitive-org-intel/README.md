@@ -119,27 +119,6 @@ The response includes `structured_data` (your fields, filled in), `confidence_sc
 4. **Combine with ICP scoring** — run both `competitive-org-intel` and `icp-qualifier` on the same domain to get competitive context alongside fit scoring for an account.
 5. **Use `tier: "medium"` for private or low-profile companies** — harder targets with limited press coverage benefit from deeper multi-source research.
 
-## Copy-for-LLM prompt
-
-```
-Build a competitive intelligence monitor using the Sixtyfour API.
-
-POST /company-intelligence with:
-- target_company: { website: "domain.com" }
-- struct: (same keys and descriptions as in "The API call, exposed" above — matches buildCompetitiveOrgStruct() in this repo)
-- tier: "low"
-
-The JS implementation is:
-
-PASTE_JAVASCRIPT_SNIPPET_HERE
-
-Extend this to:
-1. Accept a list of competitor domains
-2. Run all enrichments in parallel (rate-limit to 3 at a time)
-3. Store each result as JSON with a timestamp
-4. Diff against the previous run and print a changelog of what changed
-```
-
 ## License
 
 MIT — same as the rest of the monorepo.

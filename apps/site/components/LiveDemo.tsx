@@ -4,6 +4,7 @@ import * as React from "react";
 import { Badge, Button, Card, CardContent } from "@sixtyfour-demos/ui";
 import type { Demo } from "../lib/demos";
 import { useApiKey, ApiKeyModal } from "./ApiKeyModal";
+import { CopyForLLMButton } from "./CopyForLLMButton";
 
 export type SerializableDemo = Omit<Demo, "inputSchema">;
 import { formatPercent } from "../lib/utils";
@@ -13,6 +14,8 @@ interface LiveDemoProps {
   initialResult: unknown;
   /** Pre-highlighted HTML for the initial sample (server-rendered). */
   initialHighlightedResult?: string;
+  /** Agent prompt to copy — rendered as a button below "Run demo". */
+  llmPrompt?: string;
 }
 
 interface RunState {
@@ -27,7 +30,7 @@ interface RunState {
 }
 
 
-export function LiveDemo({ demo, initialResult, initialHighlightedResult }: LiveDemoProps) {
+export function LiveDemo({ demo, initialResult, initialHighlightedResult, llmPrompt }: LiveDemoProps) {
   const [form, setForm] = React.useState<Record<string, string>>(() =>
     Object.fromEntries(demo.inputs.map((i) => [i.name, i.defaultValue ?? ""])),
   );
@@ -218,6 +221,9 @@ export function LiveDemo({ demo, initialResult, initialHighlightedResult }: Live
             <Button type="submit" disabled={isRunning} className="w-full">
               {isRunning ? "Running…" : "Run demo"}
             </Button>
+            {llmPrompt && !isRunning && (
+              <CopyForLLMButton prompt={llmPrompt} className="w-full" />
+            )}
             {isRunning && (
               <button
                 type="button"

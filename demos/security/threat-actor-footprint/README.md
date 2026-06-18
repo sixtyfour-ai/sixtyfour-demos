@@ -105,33 +105,6 @@ The `struct` field defines your output schema. Every key becomes a response fiel
 4. **Combine with KYB** — run Threat Actor Footprint on a company's founders alongside a KYB Report for full entity + person coverage.
 5. **Use `tier: "medium"` for common names** — broader research reduces false negatives from identity collisions.
 
-## Copy-for-LLM prompt
-
-```
-Build a Threat Actor Footprint tool using the Sixtyfour API.
-
-POST /people-intelligence with:
-- lead_info: { full_name, email (optional), linkedin_url (optional) }
-- struct: {
-    full_name, known_aliases, confirmed_emails, confirmed_phone_numbers,
-    social_profiles, professional_background, technical_skills,
-    forum_and_community_presence, dark_web_mentions, credential_leak_exposure,
-    domain_and_infrastructure, threat_actor_signals, legal_and_public_record,
-    risk_score, risk_verdict, risk_summary, data_sources_note
-  }
-- tier: "low"
-
-The JS implementation is:
-
-PASTE_JAVASCRIPT_SNIPPET_HERE
-
-Extend this to:
-1. Accept a CSV of names and emails
-2. Screen each person concurrently (rate-limit to 5 at a time)
-3. Write results to a new CSV with all struct fields as columns
-4. Flag any row where risk_verdict is "medium" or above for manual review
-```
-
 ## License
 
 MIT — same as the rest of the monorepo.
