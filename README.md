@@ -103,13 +103,19 @@ See [.env.example](.env.example).
 
 ## Deploy your own copy
 
-The site is a stock Next.js 14 app — works on Vercel out of the box.
+The site is a Next.js 14 app in `apps/site` inside a pnpm monorepo.
 
-1. Fork this repo.
-2. Create a Vercel project pointed at the fork.
-3. Set the build command to `pnpm turbo run build --filter=site` and the output directory to `apps/site/.next`.
-4. Add `SIXTYFOUR_API_KEY` to the project's environment variables.
-5. Add a custom domain — CNAME to `cname.vercel-dns.com`.
+1. Fork this repo and create a Vercel project pointed at the fork.
+2. In **Settings → General → Build & Development Settings**:
+   - **Root Directory**: `apps/site`
+   - **Framework Preset**: Next.js
+   - **Install Command** (override): `cd ../.. && pnpm install --frozen-lockfile`
+   - **Build Command** (override): `cd ../.. && pnpm turbo run build --filter=site`
+   - **Output Directory**: leave empty (do not point at `.next`)
+3. Add `SIXTYFOUR_API_KEY` to the project's environment variables.
+4. Add a custom domain — CNAME to `cname.vercel-dns.com`.
+
+Do not set Framework to "Other" or Output Directory to `apps/site/.next` — that deploys raw build artifacts as static files and returns 404.
 
 ## Scripts
 
