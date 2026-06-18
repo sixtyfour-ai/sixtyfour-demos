@@ -6,10 +6,10 @@
   "framework": "nextjs",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/site ./packages ./demos ./scripts ./pnpm-lock.yaml ./package.json ./pnpm-workspace.yaml ./turbo.json ./vercel.json",
   "functions": {
-    "apps/site/app/api/demo/[slug]/run/route.ts": {
+    "apps/site/app/api/demo/*/run/route.ts": {
       "maxDuration": 300
     },
-    "apps/site/app/api/demo/[slug]/status/route.ts": {
+    "apps/site/app/api/demo/*/status/route.ts": {
       "maxDuration": 30
     }
   }
