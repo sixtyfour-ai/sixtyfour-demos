@@ -1,7 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm turbo run build --filter=site",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "outputDirectory": "apps/site/.next",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/site ./packages ./demos ./scripts ./pnpm-lock.yaml ./package.json ./pnpm-workspace.yaml ./turbo.json ./vercel.json"
 }
