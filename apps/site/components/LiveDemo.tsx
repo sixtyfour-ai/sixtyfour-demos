@@ -366,7 +366,7 @@ function ResultPanel({ result, highlightedHtml }: { result: unknown; highlighted
   if (highlightedHtml) {
     return (
       <div
-        className="shiki-wrapper max-h-[420px] overflow-y-auto rounded-lg border border-zinc-800 text-xs leading-relaxed [&>pre]:m-0 [&>pre]:overflow-x-auto [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:font-mono [&>pre]:whitespace-pre-wrap [&>pre]:break-words"
+        className="shiki-wrapper max-h-[420px] overflow-y-auto rounded-lg border border-zinc-800 text-xs leading-relaxed [&>pre]:m-0 [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:font-mono [&>pre]:whitespace-pre-wrap [&>pre]:break-words"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: highlightedHtml }}
       />
