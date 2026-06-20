@@ -38,7 +38,7 @@ export function CopyableCodeBlock({ html, raw }: CopyableCodeBlockProps) {
       </div>
       {/* highlighted code — Shiki sets bg via inline style, we override to match */}
       <div
-        className="w-full overflow-x-auto [&>pre]:m-0 [&>pre]:w-full [&>pre]:rounded-none [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-xs [&>pre]:leading-relaxed"
+        className="w-full [&>pre]:m-0 [&>pre]:overflow-x-auto [&>pre]:rounded-none [&>pre]:p-4 [&>pre]:font-mono [&>pre]:text-xs [&>pre]:leading-relaxed"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: html }}
       />

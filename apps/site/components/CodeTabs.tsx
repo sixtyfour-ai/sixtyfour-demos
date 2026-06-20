@@ -61,7 +61,7 @@ function CodeBlock({ code, html }: { code: string; html?: string }) {
   if (html) {
     return (
       <div
-        className="shiki-wrapper max-h-[480px] overflow-auto rounded-lg border border-zinc-800 text-xs leading-relaxed [&>pre]:m-0 [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:font-mono"
+        className="shiki-wrapper max-h-[480px] overflow-y-auto rounded-lg border border-zinc-800 text-xs leading-relaxed [&>pre]:m-0 [&>pre]:overflow-x-auto [&>pre]:rounded-lg [&>pre]:p-4 [&>pre]:font-mono"
         // Shiki inlines background + token colors via style attributes — safe, no user content
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: html }}
